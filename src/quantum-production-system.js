@@ -221,7 +221,7 @@ class QuantumProductionSystem {
             outdir,
             define: defines,
             minify: profile.minify !== false,
-            sourcemap: options.sourcemap ? "external" : "none",
+            sourcemap: options.sourcemap ? true : false,
             target: profile.target || "browser",
             format: profile.format || "esm",
             splitting: profile.splitting !== false,
@@ -232,6 +232,18 @@ class QuantumProductionSystem {
           const buildTime = performance.now() - start;
           const totalSize =
             result.outputs?.reduce((sum, o) => sum + o.size, 0) || 0;
+
+          // Check if build was successful
+          if (!result.success) {
+            console.error(`  Build failed:`);
+            if (result.logs) {
+              result.logs.forEach((log) => {
+                console.error(`    ${log.level}: ${log.message}`);
+                if (log.detail) console.error(`      ${log.detail}`);
+              });
+            }
+            return { success: false, error: "Build failed", logs: result.logs };
+          }
 
           // Cache result
           const buildId = `build_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -277,6 +289,7 @@ class QuantumProductionSystem {
           return { buildId, result, buildTime, manifest };
         } catch (error) {
           console.error(`  Build failed:`, error.message);
+          console.error(`  Stack:`, error.stack);
           return { success: false, error: error.message };
         }
       },
