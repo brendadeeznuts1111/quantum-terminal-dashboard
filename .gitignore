@@ -4,6 +4,7 @@ builds/
 .build-cache/
 .deployments/
 benchmarks/
+!benchmarks.csv
 reports/
 *.log
 .DS_Store

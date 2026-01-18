@@ -1,0 +1,6 @@
+Operation,Before,Current,Gain,Impact,tags,timestamp,owner,metrics
+Buffer.indexOf(),3.25s,7.84ms,2x (SIMD),High,"buffer,simd,perf",2026-01-18T15:18:00Z,maintainer.author.name,"SIMD-enabled, cross-ref Bun.stringWidth Unicode"
+Bun.spawnSync(),13ms,2.558ms,5.1x,Critical,"spawn,posix,macos",2026-01-18T15:18:00Z,maintainer.author.name,"FD opt, min/max 1.687/3.896ms"
+Promise.race(),baseline,6.2M ops/s,1.3x,Medium,"promise,race,perf",2026-01-18T15:18:00Z,maintainer.author.name,"0.16ms time, cross-ref performance.now timing"
+IPC Communication,baseline,optimized,1.3x,High,"ipc,comm,perf",2026-01-18T15:18:00Z,maintainer.author.name,"Heap 0.9/1.2 MB, RSS 30.5 MB"
+Response.json(),2415ms,~700ms,3.5x,High,"response,json,simd",2026-01-18T15:18:00Z,maintainer.author.name,"FastStringifier SIMD path"
