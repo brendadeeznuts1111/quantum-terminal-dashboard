@@ -1,0 +1,99 @@
+# Staging Environment Configuration
+# Demonstrates staging-specific setup with environment variables
+
+defaults: &defaults
+  timeout: 5000
+  retries: 3
+  cache:
+    enabled: true
+    ttl: 3600
+
+staging:
+  <<: *defaults
+  server:
+    host: staging.quantum-lattice.com
+    port: 443
+    timeout: 5000
+    retries: 3
+  database:
+    host: ${STAGING_DB_HOST}
+    port: ${STAGING_DB_PORT:-5432}
+    name: quantum_lattice_staging
+    username: ${STAGING_DB_USER}
+    password: ${STAGING_DB_PASS}
+    ssl: ${STAGING_DB_SSL:-true}
+    pool:
+      min: 2
+      max: 10
+      idleTimeout: 30000
+  api:
+    url: https://staging-api.quantum-lattice.com
+    key: ${STAGING_API_KEY}
+    version: "v1"
+    timeout: 5000
+    retries: 3
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+      - /api/v1/analytics
+      - /api/v1/experiments
+  logging:
+    level: info
+    pretty: false
+    format: json
+    colors: false
+  security:
+    jwt_secret: ${STAGING_JWT_SECRET}
+    encryption_key: ${STAGING_ENCRYPTION_KEY}
+    session_timeout: 86400
+    cors_enabled: true
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 1000
+  cache:
+    enabled: true
+    ttl: 1800
+    provider: redis-cluster
+    host: ${STAGING_REDIS_HOST}
+    port: ${STAGING_REDIS_PORT:-6379}
+    password: ${STAGING_REDIS_PASS}
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: false
+    predictive_analytics: true
+    a_b_testing: true
+    advanced_logging: true
+  performance:
+    simd_enabled: true
+    worker_threads: 6
+    memory_limit: "1GB"
+    monitoring:
+      enabled: true
+      metrics_interval: 30000
+  quantum:
+    tension_threshold: 0.7
+    decay_rate: 0.02
+    health_check_interval: 30000
+    simulation_mode: false
+    analytics_enabled: true
+    debug_mode: false
+  notifications:
+    slack:
+      webhook_url: ${STAGING_SLACK_WEBHOOK}
+      channel: "#staging-alerts"
+    email:
+      smtp_host: ${STAGING_SMTP_HOST}
+      smtp_port: ${STAGING_SMTP_PORT:-587}
+      from: "staging@quantum-lattice.com"
+  external_services:
+    analytics:
+      provider: ${STAGING_ANALYTICS_PROVIDER:-mixpanel}
+      api_key: ${STAGING_ANALYTICS_KEY}
+    cdn:
+      provider: ${STAGING_CDN_PROVIDER:-cloudflare}
+      domain: staging.quantum-lattice.com
+    monitoring:
+      provider: ${STAGING_MONITORING_PROVIDER:-datadog}
+      api_key: ${STAGING_MONITORING_KEY}

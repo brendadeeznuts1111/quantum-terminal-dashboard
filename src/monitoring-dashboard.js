@@ -12,14 +12,14 @@
 /**
  * Pad string to width using Bun.stringWidth() for accurate Unicode handling
  */
-function padEnd(str, width, char = ' ') {
+function padEnd(str, width, char = " ") {
   const s = String(str);
   const currentWidth = Bun.stringWidth(s);
   if (currentWidth >= width) return s;
   return s + char.repeat(width - currentWidth);
 }
 
-function padStart(str, width, char = ' ') {
+function padStart(str, width, char = " ") {
   const s = String(str);
   const currentWidth = Bun.stringWidth(s);
   if (currentWidth >= width) return s;
@@ -28,33 +28,33 @@ function padStart(str, width, char = ' ') {
 
 // ANSI codes
 const ANSI = {
-  reset: '\x1b[0m',
-  bold: '\x1b[1m',
-  dim: '\x1b[2m',
-  underline: '\x1b[4m',
+  reset: "\x1b[0m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+  underline: "\x1b[4m",
 
   // Foreground colors
-  black: '\x1b[30m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  white: '\x1b[37m',
+  black: "\x1b[30m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+  cyan: "\x1b[36m",
+  white: "\x1b[37m",
 
   // Background colors
-  bgBlack: '\x1b[40m',
-  bgRed: '\x1b[41m',
-  bgGreen: '\x1b[42m',
-  bgYellow: '\x1b[43m',
-  bgBlue: '\x1b[44m',
+  bgBlack: "\x1b[40m",
+  bgRed: "\x1b[41m",
+  bgGreen: "\x1b[42m",
+  bgYellow: "\x1b[43m",
+  bgBlue: "\x1b[44m",
 
   // Cursor
-  clearScreen: '\x1b[2J',
-  cursorHome: '\x1b[H',
-  hideCursor: '\x1b[?25l',
-  showCursor: '\x1b[?25h'
+  clearScreen: "\x1b[2J",
+  cursorHome: "\x1b[H",
+  hideCursor: "\x1b[?25l",
+  showCursor: "\x1b[?25h",
 };
 
 class MonitoringDashboard {
@@ -68,10 +68,10 @@ class MonitoringDashboard {
         heapPercent: config.heapThreshold || 90,
         latencyMs: config.latencyThreshold || 100,
         errorRate: config.errorRateThreshold || 5,
-        ...config.alertThresholds
+        ...config.alertThresholds,
       },
       anomalyDetection: config.anomalyDetection !== false,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -81,7 +81,7 @@ class MonitoringDashboard {
       latency: [],
       requests: [],
       errors: [],
-      custom: new Map()
+      custom: new Map(),
     };
 
     this.alerts = [];
@@ -95,7 +95,9 @@ class MonitoringDashboard {
   // Start monitoring
   startMonitoring() {
     console.log(`${ANSI.cyan}Starting Monitoring Dashboard...${ANSI.reset}`);
-    console.log(`${ANSI.dim}Refresh interval: ${this.config.refreshInterval}ms${ANSI.reset}`);
+    console.log(
+      `${ANSI.dim}Refresh interval: ${this.config.refreshInterval}ms${ANSI.reset}`,
+    );
 
     this.startTime = Date.now();
     process.stdout.write(ANSI.hideCursor);
@@ -116,7 +118,7 @@ class MonitoringDashboard {
     }, this.config.refreshInterval);
 
     // Handle exit
-    process.on('SIGINT', () => this.stop());
+    process.on("SIGINT", () => this.stop());
 
     return this;
   }
@@ -148,10 +150,10 @@ class MonitoringDashboard {
     const latency = 10 + Math.random() * 50 + (cpuPercent > 50 ? 30 : 0);
 
     // Store metrics with timestamp
-    this.addMetric('cpu', cpuPercent);
-    this.addMetric('memory', rssPercent);
-    this.addMetric('heap', heapPercent);
-    this.addMetric('latency', latency);
+    this.addMetric("cpu", cpuPercent);
+    this.addMetric("memory", rssPercent);
+    this.addMetric("heap", heapPercent);
+    this.addMetric("latency", latency);
 
     // Simulate request/error rates
     const newRequests = Math.floor(Math.random() * 100) + 50;
@@ -160,8 +162,8 @@ class MonitoringDashboard {
     this.requestCount += newRequests;
     this.errorCount += newErrors;
 
-    this.addMetric('requests', newRequests);
-    this.addMetric('errors', newErrors);
+    this.addMetric("requests", newRequests);
+    this.addMetric("errors", newErrors);
 
     // Check thresholds
     this.checkThresholds({
@@ -169,7 +171,7 @@ class MonitoringDashboard {
       memoryPercent: rssPercent,
       heapPercent,
       latencyMs: latency,
-      errorRate: (this.errorCount / Math.max(this.requestCount, 1)) * 100
+      errorRate: (this.errorCount / Math.max(this.requestCount, 1)) * 100,
     });
   }
 
@@ -181,7 +183,7 @@ class MonitoringDashboard {
 
     this.metrics[name].push({
       value,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Trim history
@@ -210,12 +212,12 @@ class MonitoringDashboard {
     for (const [key, threshold] of Object.entries(thresholds)) {
       if (metrics[key] !== undefined && metrics[key] > threshold) {
         this.addAlert({
-          type: 'threshold',
+          type: "threshold",
           metric: key,
           value: metrics[key],
           threshold,
-          severity: metrics[key] > threshold * 1.2 ? 'critical' : 'warning',
-          timestamp: Date.now()
+          severity: metrics[key] > threshold * 1.2 ? "critical" : "warning",
+          timestamp: Date.now(),
         });
       }
     }
@@ -224,9 +226,8 @@ class MonitoringDashboard {
   // Add alert
   addAlert(alert) {
     // Avoid duplicate alerts within 30 seconds
-    const recentAlert = this.alerts.find(a =>
-      a.metric === alert.metric &&
-      Date.now() - a.timestamp < 30000
+    const recentAlert = this.alerts.find(
+      (a) => a.metric === alert.metric && Date.now() - a.timestamp < 30000,
     );
 
     if (!recentAlert) {
@@ -244,10 +245,12 @@ class MonitoringDashboard {
     for (const [key, values] of Object.entries(this.metrics)) {
       if (!Array.isArray(values) || values.length < 10) continue;
 
-      const recentValues = values.slice(-30).map(v => v.value);
-      const mean = recentValues.reduce((a, b) => a + b, 0) / recentValues.length;
+      const recentValues = values.slice(-30).map((v) => v.value);
+      const mean =
+        recentValues.reduce((a, b) => a + b, 0) / recentValues.length;
       const stdDev = Math.sqrt(
-        recentValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / recentValues.length
+        recentValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
+          recentValues.length,
       );
 
       const latestValue = values[values.length - 1].value;
@@ -261,13 +264,12 @@ class MonitoringDashboard {
           mean: mean.toFixed(2),
           stdDev: stdDev.toFixed(2),
           zScore: zScore.toFixed(2),
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
         // Avoid duplicate anomalies
-        const recentAnomaly = this.anomalies.find(a =>
-          a.metric === key &&
-          Date.now() - a.timestamp < 60000
+        const recentAnomaly = this.anomalies.find(
+          (a) => a.metric === key && Date.now() - a.timestamp < 60000,
         );
 
         if (!recentAnomaly) {
@@ -290,13 +292,13 @@ class MonitoringDashboard {
     for (const [key, values] of Object.entries(this.metrics)) {
       if (!Array.isArray(values) || values.length === 0) continue;
 
-      const nums = values.map(v => v.value);
+      const nums = values.map((v) => v.value);
       stats[key] = {
         current: nums[nums.length - 1],
         min: Math.min(...nums),
         max: Math.max(...nums),
         avg: nums.reduce((a, b) => a + b, 0) / nums.length,
-        samples: nums.length
+        samples: nums.length,
       };
     }
 
@@ -313,23 +315,32 @@ class MonitoringDashboard {
 
     // CPU impact
     if (metrics.cpu) {
-      const cpuImpact = Math.min((metrics.cpu / thresholds.cpuPercent) * 20, 30);
+      const cpuImpact = Math.min(
+        (metrics.cpu / thresholds.cpuPercent) * 20,
+        30,
+      );
       score -= cpuImpact;
-      factors.push({ name: 'CPU', impact: cpuImpact.toFixed(1) });
+      factors.push({ name: "CPU", impact: cpuImpact.toFixed(1) });
     }
 
     // Memory impact
     if (metrics.heap) {
-      const memImpact = Math.min((metrics.heap / thresholds.heapPercent) * 25, 35);
+      const memImpact = Math.min(
+        (metrics.heap / thresholds.heapPercent) * 25,
+        35,
+      );
       score -= memImpact;
-      factors.push({ name: 'Memory', impact: memImpact.toFixed(1) });
+      factors.push({ name: "Memory", impact: memImpact.toFixed(1) });
     }
 
     // Latency impact
     if (metrics.latency) {
-      const latImpact = Math.min((metrics.latency / thresholds.latencyMs) * 15, 20);
+      const latImpact = Math.min(
+        (metrics.latency / thresholds.latencyMs) * 15,
+        20,
+      );
       score -= latImpact;
-      factors.push({ name: 'Latency', impact: latImpact.toFixed(1) });
+      factors.push({ name: "Latency", impact: latImpact.toFixed(1) });
     }
 
     // Error rate impact
@@ -337,21 +348,23 @@ class MonitoringDashboard {
     if (errorRate > 0) {
       const errImpact = Math.min(errorRate * 3, 15);
       score -= errImpact;
-      factors.push({ name: 'Errors', impact: errImpact.toFixed(1) });
+      factors.push({ name: "Errors", impact: errImpact.toFixed(1) });
     }
 
     // Active alerts impact
-    const recentAlerts = this.alerts.filter(a => Date.now() - a.timestamp < 60000);
+    const recentAlerts = this.alerts.filter(
+      (a) => Date.now() - a.timestamp < 60000,
+    );
     score -= recentAlerts.length * 2;
 
     score = Math.max(0, Math.min(100, score));
 
     let status;
-    if (score >= 90) status = 'excellent';
-    else if (score >= 75) status = 'healthy';
-    else if (score >= 50) status = 'degraded';
-    else if (score >= 25) status = 'warning';
-    else status = 'critical';
+    if (score >= 90) status = "excellent";
+    else if (score >= 75) status = "healthy";
+    else if (score >= 50) status = "degraded";
+    else if (score >= 25) status = "warning";
+    else status = "critical";
 
     return { score: Math.round(score), status, factors };
   }
@@ -366,24 +379,28 @@ class MonitoringDashboard {
       timestamp: new Date().toISOString(),
       uptime: {
         ms: uptime,
-        formatted: this.formatDuration(uptime)
+        formatted: this.formatDuration(uptime),
       },
       health,
       stats,
       totals: {
         requests: this.requestCount,
         errors: this.errorCount,
-        errorRate: ((this.errorCount / Math.max(this.requestCount, 1)) * 100).toFixed(2) + '%'
+        errorRate:
+          ((this.errorCount / Math.max(this.requestCount, 1)) * 100).toFixed(
+            2,
+          ) + "%",
       },
       alerts: {
         total: this.alerts.length,
-        recent: this.alerts.filter(a => Date.now() - a.timestamp < 300000).length,
-        critical: this.alerts.filter(a => a.severity === 'critical').length
+        recent: this.alerts.filter((a) => Date.now() - a.timestamp < 300000)
+          .length,
+        critical: this.alerts.filter((a) => a.severity === "critical").length,
       },
       anomalies: {
         total: this.anomalies.length,
-        recent: this.anomalies.slice(-5)
-      }
+        recent: this.anomalies.slice(-5),
+      },
     };
   }
 
@@ -399,7 +416,7 @@ class MonitoringDashboard {
   }
 
   // Draw progress bar
-  progressBar(value, max = 100, width = 20, filled = '█', empty = '░') {
+  progressBar(value, max = 100, width = 20, filled = "█", empty = "░") {
     const percent = Math.min(value / max, 1);
     const filledCount = Math.floor(percent * width);
     const emptyCount = width - filledCount;
@@ -413,19 +430,21 @@ class MonitoringDashboard {
 
   // Draw sparkline
   sparkline(values, width = 20) {
-    if (values.length === 0) return ' '.repeat(width);
+    if (values.length === 0) return " ".repeat(width);
 
-    const chars = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
-    const nums = values.slice(-width).map(v => v.value);
+    const chars = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
+    const nums = values.slice(-width).map((v) => v.value);
     const min = Math.min(...nums);
     const max = Math.max(...nums);
     const range = max - min || 1;
 
-    return nums.map(val => {
-      const normalized = (val - min) / range;
-      const index = Math.floor(normalized * (chars.length - 1));
-      return chars[index];
-    }).join('');
+    return nums
+      .map((val) => {
+        const normalized = (val - min) / range;
+        const index = Math.floor(normalized * (chars.length - 1));
+        return chars[index];
+      })
+      .join("");
   }
 
   // Render dashboard
@@ -438,18 +457,30 @@ class MonitoringDashboard {
     process.stdout.write(ANSI.clearScreen + ANSI.cursorHome);
 
     // Header
-    console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${'═'.repeat(cols)}${ANSI.reset}`);
-    const title = '  QUANTUM MONITORING DASHBOARD';
+    console.log(
+      `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${"═".repeat(cols)}${ANSI.reset}`,
+    );
+    const title = "  QUANTUM MONITORING DASHBOARD";
     const time = new Date().toLocaleTimeString();
     const padding = cols - Bun.stringWidth(title) - Bun.stringWidth(time) - 4;
-    console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${title}${' '.repeat(padding)}${time}  ${ANSI.reset}`);
-    console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${'═'.repeat(cols)}${ANSI.reset}`);
+    console.log(
+      `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${title}${" ".repeat(padding)}${time}  ${ANSI.reset}`,
+    );
+    console.log(
+      `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${"═".repeat(cols)}${ANSI.reset}`,
+    );
     console.log();
 
     // Health status
-    const healthColor = health.status === 'excellent' || health.status === 'healthy' ? ANSI.green :
-                        health.status === 'degraded' ? ANSI.yellow : ANSI.red;
-    console.log(`${ANSI.bold}Health:${ANSI.reset} ${healthColor}${health.status.toUpperCase()} (${health.score}/100)${ANSI.reset}  |  ${ANSI.bold}Uptime:${ANSI.reset} ${ANSI.cyan}${uptime}${ANSI.reset}`);
+    const healthColor =
+      health.status === "excellent" || health.status === "healthy"
+        ? ANSI.green
+        : health.status === "degraded"
+          ? ANSI.yellow
+          : ANSI.red;
+    console.log(
+      `${ANSI.bold}Health:${ANSI.reset} ${healthColor}${health.status.toUpperCase()} (${health.score}/100)${ANSI.reset}  |  ${ANSI.bold}Uptime:${ANSI.reset} ${ANSI.cyan}${uptime}${ANSI.reset}`,
+    );
     console.log();
 
     // System metrics
@@ -458,16 +489,22 @@ class MonitoringDashboard {
 
     // CPU
     const cpu = metrics.cpu || 0;
-    console.log(`  ${padEnd('CPU', 10)} ${this.progressBar(cpu)} ${padStart(cpu.toFixed(1) + '%', 8)}  ${ANSI.dim}${this.sparkline(this.metrics.cpu || [])}${ANSI.reset}`);
+    console.log(
+      `  ${padEnd("CPU", 10)} ${this.progressBar(cpu)} ${padStart(cpu.toFixed(1) + "%", 8)}  ${ANSI.dim}${this.sparkline(this.metrics.cpu || [])}${ANSI.reset}`,
+    );
 
     // Memory
     const heap = metrics.heap || 0;
-    console.log(`  ${padEnd('Heap', 10)} ${this.progressBar(heap)} ${padStart(heap.toFixed(1) + '%', 8)}  ${ANSI.dim}${this.sparkline(this.metrics.heap || [])}${ANSI.reset}`);
+    console.log(
+      `  ${padEnd("Heap", 10)} ${this.progressBar(heap)} ${padStart(heap.toFixed(1) + "%", 8)}  ${ANSI.dim}${this.sparkline(this.metrics.heap || [])}${ANSI.reset}`,
+    );
 
     // Latency
     const latency = metrics.latency || 0;
     const latColor = latency > 50 ? ANSI.yellow : ANSI.green;
-    console.log(`  ${padEnd('Latency', 10)} ${latColor}${padStart(latency.toFixed(0) + 'ms', 6)}${ANSI.reset}                          ${ANSI.dim}${this.sparkline(this.metrics.latency || [])}${ANSI.reset}`);
+    console.log(
+      `  ${padEnd("Latency", 10)} ${latColor}${padStart(latency.toFixed(0) + "ms", 6)}${ANSI.reset}                          ${ANSI.dim}${this.sparkline(this.metrics.latency || [])}${ANSI.reset}`,
+    );
 
     console.log();
 
@@ -475,25 +512,36 @@ class MonitoringDashboard {
     console.log(`${ANSI.bold}${ANSI.underline}Traffic${ANSI.reset}`);
     console.log();
 
-    const errorRate = ((this.errorCount / Math.max(this.requestCount, 1)) * 100);
+    const errorRate = (this.errorCount / Math.max(this.requestCount, 1)) * 100;
     const errorColor = errorRate > 1 ? ANSI.red : ANSI.green;
 
-    console.log(`  ${padEnd('Requests', 12)} ${ANSI.cyan}${this.requestCount.toLocaleString()}${ANSI.reset}`);
-    console.log(`  ${padEnd('Errors', 12)} ${errorColor}${this.errorCount}${ANSI.reset} (${errorRate.toFixed(2)}%)`);
+    console.log(
+      `  ${padEnd("Requests", 12)} ${ANSI.cyan}${this.requestCount.toLocaleString()}${ANSI.reset}`,
+    );
+    console.log(
+      `  ${padEnd("Errors", 12)} ${errorColor}${this.errorCount}${ANSI.reset} (${errorRate.toFixed(2)}%)`,
+    );
     console.log();
 
     // Recent alerts
-    const recentAlerts = this.alerts.filter(a => Date.now() - a.timestamp < 300000).slice(-3);
-    console.log(`${ANSI.bold}${ANSI.underline}Alerts${ANSI.reset} (${recentAlerts.length} recent)`);
+    const recentAlerts = this.alerts
+      .filter((a) => Date.now() - a.timestamp < 300000)
+      .slice(-3);
+    console.log(
+      `${ANSI.bold}${ANSI.underline}Alerts${ANSI.reset} (${recentAlerts.length} recent)`,
+    );
     console.log();
 
     if (recentAlerts.length === 0) {
       console.log(`  ${ANSI.dim}No recent alerts${ANSI.reset}`);
     } else {
       for (const alert of recentAlerts) {
-        const alertColor = alert.severity === 'critical' ? ANSI.red : ANSI.yellow;
+        const alertColor =
+          alert.severity === "critical" ? ANSI.red : ANSI.yellow;
         const age = Math.floor((Date.now() - alert.timestamp) / 1000);
-        console.log(`  ${alertColor}● ${alert.metric}${ANSI.reset}: ${alert.value.toFixed(1)} > ${alert.threshold} ${ANSI.dim}(${age}s ago)${ANSI.reset}`);
+        console.log(
+          `  ${alertColor}● ${alert.metric}${ANSI.reset}: ${alert.value.toFixed(1)} > ${alert.threshold} ${ANSI.dim}(${age}s ago)${ANSI.reset}`,
+        );
       }
     }
 
@@ -502,24 +550,30 @@ class MonitoringDashboard {
     // Recent anomalies
     const recentAnomalies = this.anomalies.slice(-2);
     if (recentAnomalies.length > 0) {
-      console.log(`${ANSI.bold}${ANSI.underline}Anomalies Detected${ANSI.reset}`);
+      console.log(
+        `${ANSI.bold}${ANSI.underline}Anomalies Detected${ANSI.reset}`,
+      );
       console.log();
       for (const anomaly of recentAnomalies) {
-        console.log(`  ${ANSI.magenta}◆ ${anomaly.metric}${ANSI.reset}: z-score ${anomaly.zScore} ${ANSI.dim}(value: ${typeof anomaly.value === 'number' ? anomaly.value.toFixed(1) : anomaly.value}, mean: ${anomaly.mean})${ANSI.reset}`);
+        console.log(
+          `  ${ANSI.magenta}◆ ${anomaly.metric}${ANSI.reset}: z-score ${anomaly.zScore} ${ANSI.dim}(value: ${typeof anomaly.value === "number" ? anomaly.value.toFixed(1) : anomaly.value}, mean: ${anomaly.mean})${ANSI.reset}`,
+        );
       }
       console.log();
     }
 
     // Footer
-    console.log(`${ANSI.dim}${'─'.repeat(cols)}${ANSI.reset}`);
-    console.log(`${ANSI.dim}Refresh: ${this.config.refreshInterval}ms  |  History: ${this.config.historyLength} samples  |  Press Ctrl+C to exit${ANSI.reset}`);
+    console.log(`${ANSI.dim}${"─".repeat(cols)}${ANSI.reset}`);
+    console.log(
+      `${ANSI.dim}Refresh: ${this.config.refreshInterval}ms  |  History: ${this.config.historyLength} samples  |  Press Ctrl+C to exit${ANSI.reset}`,
+    );
   }
 
   // Get terminal size
   getTerminalSize() {
     return {
       cols: process.stdout.columns || 80,
-      rows: process.stdout.rows || 24
+      rows: process.stdout.rows || 24,
     };
   }
 
@@ -528,7 +582,7 @@ class MonitoringDashboard {
     this.addMetric(name, value);
     this.metrics.custom.set(name, {
       values: this.metrics[name],
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     });
   }
 
@@ -543,23 +597,23 @@ if (import.meta.main) {
   const args = Bun.argv.slice(2);
 
   const config = {
-    refreshInterval: parseInt(process.env.REFRESH_INTERVAL || '2000'),
-    historyLength: parseInt(process.env.HISTORY_LENGTH || '60'),
-    anomalyDetection: process.env.ANOMALY_DETECTION !== 'false'
+    refreshInterval: parseInt(process.env.REFRESH_INTERVAL || "2000"),
+    historyLength: parseInt(process.env.HISTORY_LENGTH || "60"),
+    anomalyDetection: process.env.ANOMALY_DETECTION !== "false",
   };
 
   // Parse args
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--interval' || args[i] === '-i') {
+    if (args[i] === "--interval" || args[i] === "-i") {
       config.refreshInterval = parseInt(args[++i]) || 2000;
     }
-    if (args[i] === '--history' || args[i] === '-h') {
+    if (args[i] === "--history" || args[i] === "-h") {
       config.historyLength = parseInt(args[++i]) || 60;
     }
-    if (args[i] === '--no-anomaly') {
+    if (args[i] === "--no-anomaly") {
       config.anomalyDetection = false;
     }
-    if (args[i] === '--help') {
+    if (args[i] === "--help") {
       console.log(`
 Quantum Monitoring Dashboard
 

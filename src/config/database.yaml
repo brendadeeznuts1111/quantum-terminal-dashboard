@@ -1,0 +1,105 @@
+# Database Configuration
+# Multi-connection setup with environment variables
+
+connections:
+  primary:
+    type: postgres
+    host: ${DB_HOST:-localhost}
+    port: ${DB_PORT:-5432}
+    database: ${DB_NAME:-quantum_lattice}
+    username: ${DB_USER:-postgres}
+    password: ${DB_PASS}
+    ssl: ${DB_SSL:-false}
+    pool:
+      min: 2
+      max: 10
+      idleTimeout: 30000
+      acquireTimeout: 60000
+      evict: 1000
+    logging:
+      enabled: ${DB_LOGGING:-false}
+      level: ${DB_LOG_LEVEL:-warn}
+
+  cache:
+    type: redis
+    host: ${REDIS_HOST:-localhost}
+    port: ${REDIS_PORT:-6379}
+    password: ${REDIS_PASS}
+    db: ${REDIS_DB:-0}
+    cluster: ${REDIS_CLUSTER:-false}
+    tls: ${REDIS_TLS:-false}
+    pool:
+      min: 1
+      max: 5
+      timeout: 5000
+    keyPrefix: ${REDIS_PREFIX:-quantum:}
+    ttl: ${REDIS_TTL:-3600}
+
+  analytics:
+    type: clickhouse
+    host: ${ANALYTICS_HOST:-localhost}
+    port: ${ANALYTICS_PORT:-8123}
+    database: ${ANALYTICS_DB:-analytics}
+    username: ${ANALYTICS_USER:-default}
+    password: ${ANALYTICS_PASS}
+    protocol: ${ANALYTICS_PROTO:-http}
+    timeout: ${ANALYTICS_TIMEOUT:-30000}
+    pool:
+      max: 3
+      acquireTimeout: 10000
+
+  search:
+    type: elasticsearch
+    host: ${SEARCH_HOST:-localhost}
+    port: ${SEARCH_PORT:-9200}
+    username: ${SEARCH_USER:-elastic}
+    password: ${SEARCH_PASS}
+    index: ${SEARCH_INDEX:-quantum_search}
+    ssl: ${SEARCH_SSL:-false}
+    pool:
+      max: 5
+      timeout: 5000
+
+migrations:
+  autoRun: ${AUTO_MIGRATE:-false}
+  directory: ${MIGRATIONS_DIR:-./migrations}
+  table: ${MIGRATIONS_TABLE:-migrations}
+  logLevel: ${MIGRATIONS_LOG_LEVEL:-info}
+
+seeds:
+  enabled: ${SEED_DB:-false}
+  directory: ${SEEDS_DIR:-./seeds}
+  truncate: ${SEEDS_TRUNCATE:-false}
+
+backup:
+  enabled: ${BACKUP_ENABLED:-false}
+  schedule: ${BACKUP_SCHEDULE:-0 2 * * *}
+  retention: ${BACKUP_RETENTION:-7d}
+  directory: ${BACKUP_DIR:-./backups}
+  compression: ${BACKUP_COMPRESSION:-gzip}
+
+monitoring:
+  enabled: ${DB_MONITORING:-false}
+  metrics:
+    connections: true
+    queries: ${DB_QUERY_METRICS:-false}
+    slowQueries: ${DB_SLOW_QUERIES:-true}
+    threshold: ${DB_SLOW_THRESHOLD:-1000}
+  alerts:
+    enabled: ${DB_ALERTS:-false}
+    thresholds:
+      connections: 80
+      cpu: 90
+      memory: 85
+
+replication:
+  enabled: ${DB_REPLICATION:-false}
+  mode: ${DB_REPLICATION_MODE:-master-slave}
+  master:
+    host: ${DB_MASTER_HOST:-localhost}
+    port: ${DB_MASTER_PORT:-5432}
+  slaves:
+    - host: ${DB_SLAVE1_HOST:-localhost}
+      port: ${DB_SLAVE1_PORT:-5433}
+    - host: ${DB_SLAVE2_HOST:-localhost}
+      port: ${DB_SLAVE2_PORT:-5434}

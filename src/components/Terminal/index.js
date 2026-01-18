@@ -9,10 +9,10 @@
  * - QTermData: DataStream + Reusable PTY (pty-stable)
  */
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
-const VERSION = '1.4.0-pty.stable';
-const RELEASE_TAG = 'pty-stable';
+const VERSION = "1.4.0-pty.stable";
+const RELEASE_TAG = "pty-stable";
 
 /**
  * QTermScene - THREE.Scene with PTY Terminal Support
@@ -20,19 +20,19 @@ const RELEASE_TAG = 'pty-stable';
  * @tag pty-alpha
  */
 export class QTermScene {
-  static COMPONENT_ID = 'qterm-scene@1.4.0-pty.alpha.1';
-  static VERSION = '1.4.0-pty.alpha.1+terminal.v1';
-  static COMPONENT_TYPE = 'THREE.Scene';
-  static FEATURE_FLAGS = ['TERMINAL', 'WEBGL', 'PTY_SUPPORT'];
-  static BUN_TERMINAL = 'Bun.Terminal';
+  static COMPONENT_ID = "qterm-scene@1.4.0-pty.alpha.1";
+  static VERSION = "1.4.0-pty.alpha.1+terminal.v1";
+  static COMPONENT_TYPE = "THREE.Scene";
+  static FEATURE_FLAGS = ["TERMINAL", "WEBGL", "PTY_SUPPORT"];
+  static BUN_TERMINAL = "Bun.Terminal";
   static PTY_DIMENSIONS = { cols: 120, rows: 40 };
-  static TERMINAL_FEATURES = 'INTERACTIVE_SHELL';
-  static RELEASE_TAG = 'pty-alpha';
+  static TERMINAL_FEATURES = "INTERACTIVE_SHELL";
+  static RELEASE_TAG = "pty-alpha";
 
   // SIMD properties
-  static SIMD_BUFFER = 'SIMD_ENABLED';
-  static SPAWN_SYNC = '30X_FASTER';
-  static GAIN = '5.8x';
+  static SIMD_BUFFER = "SIMD_ENABLED";
+  static SPAWN_SYNC = "30X_FASTER";
+  static GAIN = "5.8x";
 
   constructor(options = {}) {
     this.id = `qterm-scene-${Date.now()}`;
@@ -46,20 +46,20 @@ export class QTermScene {
     this.metrics = {
       bytesReceived: 0,
       bytesSent: 0,
-      commands: 0
+      commands: 0,
     };
   }
 
   async init() {
-    if (typeof Bun?.Terminal === 'undefined') {
-      console.warn('Bun.Terminal not available - PTY features disabled');
+    if (typeof Bun?.Terminal === "undefined") {
+      console.warn("Bun.Terminal not available - PTY features disabled");
       return null;
     }
 
     this.terminal = new Bun.Terminal({
       cols: this.dimensions.cols,
       rows: this.dimensions.rows,
-      data: (term, data) => this.handleData(term, data)
+      data: (term, data) => this.handleData(term, data),
     });
 
     return this.terminal;
@@ -82,13 +82,13 @@ export class QTermScene {
     }
   }
 
-  async spawn(command = 'bash', args = ['-i']) {
+  async spawn(command = "bash", args = ["-i"]) {
     if (!this.terminal) await this.init();
     if (!this.terminal) return null;
 
     this.process = Bun.spawn([command, ...args], {
       terminal: this.terminal,
-      env: { ...process.env, TERM: 'xterm-256color' }
+      env: { ...process.env, TERM: "xterm-256color" },
     });
 
     return this.process;
@@ -128,7 +128,7 @@ export class QTermScene {
     return {
       ...this.metrics,
       dimensions: this.dimensions,
-      bufferUsage: this.outputOffset
+      bufferUsage: this.outputOffset,
     };
   }
 }
@@ -139,19 +139,19 @@ export class QTermScene {
  * @tag pty-beta
  */
 export class QTermParticles {
-  static COMPONENT_ID = 'qterm-particles@1.4.0-pty.beta.1';
-  static VERSION = '1.4.0-pty.beta.1+simd.pty';
-  static COMPONENT_TYPE = 'ParticleSystem';
-  static FEATURE_FLAGS = ['TERMINAL', 'SIMD', 'PTY_ANIMATION'];
-  static BUN_TERMINAL = 'Bun.spawn(terminal:)';
+  static COMPONENT_ID = "qterm-particles@1.4.0-pty.beta.1";
+  static VERSION = "1.4.0-pty.beta.1+simd.pty";
+  static COMPONENT_TYPE = "ParticleSystem";
+  static FEATURE_FLAGS = ["TERMINAL", "SIMD", "PTY_ANIMATION"];
+  static BUN_TERMINAL = "Bun.spawn(terminal:)";
   static PTY_DIMENSIONS = { cols: 80, rows: 24 };
-  static TERMINAL_FEATURES = 'TERMINAL_OUTPUT';
-  static RELEASE_TAG = 'pty-beta';
+  static TERMINAL_FEATURES = "TERMINAL_OUTPUT";
+  static RELEASE_TAG = "pty-beta";
 
   // SIMD properties
-  static SIMD_BUFFER = 'SIMD_2X';
-  static SPAWN_SYNC = 'CLOSE_RANGE_FIX';
-  static GAIN = '32.5x';
+  static SIMD_BUFFER = "SIMD_2X";
+  static SPAWN_SYNC = "CLOSE_RANGE_FIX";
+  static GAIN = "32.5x";
 
   constructor(options = {}) {
     this.id = `qterm-particles-${Date.now()}`;
@@ -163,38 +163,46 @@ export class QTermParticles {
     this.config = {
       maxParticles: options.maxParticles || 10000,
       fps: options.fps || 30,
-      ...options
+      ...options,
     };
 
     this.metrics = {
       frames: 0,
       particlesRendered: 0,
-      avgFrameTime: 0
+      avgFrameTime: 0,
     };
   }
 
   async init() {
-    if (typeof Bun?.Terminal === 'undefined') return null;
+    if (typeof Bun?.Terminal === "undefined") return null;
 
     this.terminal = new Bun.Terminal({
       cols: this.dimensions.cols,
       rows: this.dimensions.rows,
-      data: (term, data) => process.stdout.write(data)
+      data: (term, data) => process.stdout.write(data),
     });
 
     return this.terminal;
   }
 
   spawnParticles(count, generator) {
-    for (let i = 0; i < count && this.particles.length < this.config.maxParticles; i++) {
-      this.particles.push(generator ? generator(i) : {
-        x: Math.random() * this.dimensions.cols,
-        y: Math.random() * this.dimensions.rows,
-        char: '*',
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        life: 1.0
-      });
+    for (
+      let i = 0;
+      i < count && this.particles.length < this.config.maxParticles;
+      i++
+    ) {
+      this.particles.push(
+        generator
+          ? generator(i)
+          : {
+              x: Math.random() * this.dimensions.cols,
+              y: Math.random() * this.dimensions.rows,
+              char: "*",
+              vx: (Math.random() - 0.5) * 2,
+              vy: (Math.random() - 0.5) * 2,
+              life: 1.0,
+            },
+      );
     }
     return this.particles.length;
   }
@@ -205,12 +213,17 @@ export class QTermParticles {
     const start = performance.now();
 
     // Clear and build frame
-    let frame = '\x1b[2J\x1b[H'; // Clear screen, home cursor
+    let frame = "\x1b[2J\x1b[H"; // Clear screen, home cursor
 
     for (const p of this.particles) {
       const x = Math.floor(p.x);
       const y = Math.floor(p.y);
-      if (x >= 0 && x < this.dimensions.cols && y >= 0 && y < this.dimensions.rows) {
+      if (
+        x >= 0 &&
+        x < this.dimensions.cols &&
+        y >= 0 &&
+        y < this.dimensions.rows
+      ) {
         frame += `\x1b[${y + 1};${x + 1}H${p.char}`;
       }
     }
@@ -221,7 +234,8 @@ export class QTermParticles {
     this.metrics.frames++;
     this.metrics.particlesRendered += this.particles.length;
     this.metrics.avgFrameTime =
-      (this.metrics.avgFrameTime * (this.metrics.frames - 1) + frameTime) / this.metrics.frames;
+      (this.metrics.avgFrameTime * (this.metrics.frames - 1) + frameTime) /
+      this.metrics.frames;
   }
 
   update(dt = 0.033) {
@@ -267,7 +281,7 @@ export class QTermParticles {
     return {
       ...this.metrics,
       particleCount: this.particles.length,
-      fps: this.config.fps
+      fps: this.config.fps,
     };
   }
 }
@@ -278,19 +292,19 @@ export class QTermParticles {
  * @tag pty-rc
  */
 export class QTermNetwork {
-  static COMPONENT_ID = 'qterm-network@1.4.0-pty.rc.1';
-  static VERSION = '1.4.0-pty.rc.1+pty.stream';
-  static COMPONENT_TYPE = 'NetworkNode';
-  static FEATURE_FLAGS = ['TERMINAL', 'NETWORK_VIS', 'PTY_STREAM'];
-  static BUN_TERMINAL = 'terminal.data()';
+  static COMPONENT_ID = "qterm-network@1.4.0-pty.rc.1";
+  static VERSION = "1.4.0-pty.rc.1+pty.stream";
+  static COMPONENT_TYPE = "NetworkNode";
+  static FEATURE_FLAGS = ["TERMINAL", "NETWORK_VIS", "PTY_STREAM"];
+  static BUN_TERMINAL = "terminal.data()";
   static PTY_DIMENSIONS = { cols: 100, rows: 30 };
-  static TERMINAL_FEATURES = 'STREAMING_DATA';
-  static RELEASE_TAG = 'pty-rc';
+  static TERMINAL_FEATURES = "STREAMING_DATA";
+  static RELEASE_TAG = "pty-rc";
 
   // SIMD properties
-  static SIMD_BUFFER = 'SIMD_ACCEL';
-  static SPAWN_SYNC = 'ARM64_OPTIMIZED';
-  static GAIN = '3.2x';
+  static SIMD_BUFFER = "SIMD_ACCEL";
+  static SPAWN_SYNC = "ARM64_OPTIMIZED";
+  static GAIN = "3.2x";
 
   constructor(options = {}) {
     this.id = `qterm-network-${Date.now()}`;
@@ -302,17 +316,17 @@ export class QTermNetwork {
     this.metrics = {
       nodesCreated: 0,
       streamsActive: 0,
-      dataReceived: 0
+      dataReceived: 0,
     };
   }
 
   async init() {
-    if (typeof Bun?.Terminal === 'undefined') return null;
+    if (typeof Bun?.Terminal === "undefined") return null;
 
     this.terminal = new Bun.Terminal({
       cols: this.dimensions.cols,
       rows: this.dimensions.rows,
-      data: (term, data) => this.handleStreamData(data)
+      data: (term, data) => this.handleStreamData(data),
     });
 
     return this.terminal;
@@ -336,7 +350,7 @@ export class QTermNetwork {
       ...nodeData,
       id,
       connections: new Set(),
-      created: Date.now()
+      created: Date.now(),
     });
     this.metrics.nodesCreated++;
     return id;
@@ -348,19 +362,19 @@ export class QTermNetwork {
       id,
       filter: config.filter || (() => true),
       callback: config.callback || (() => {}),
-      active: true
+      active: true,
     });
     this.metrics.streamsActive++;
     return id;
   }
 
-  async spawnNetworkMonitor(command = 'netstat', args = ['-an']) {
+  async spawnNetworkMonitor(command = "netstat", args = ["-an"]) {
     if (!this.terminal) await this.init();
     if (!this.terminal) return null;
 
     const proc = Bun.spawn([command, ...args], {
       terminal: this.terminal,
-      env: { ...process.env, TERM: 'xterm-256color' }
+      env: { ...process.env, TERM: "xterm-256color" },
     });
 
     return proc;
@@ -374,7 +388,7 @@ export class QTermNetwork {
     return {
       ...this.metrics,
       nodeCount: this.nodes.size,
-      dimensions: this.dimensions
+      dimensions: this.dimensions,
     };
   }
 }
@@ -385,19 +399,19 @@ export class QTermNetwork {
  * @tag pty-stable
  */
 export class QTermData {
-  static COMPONENT_ID = 'qterm-data@1.4.0-pty.stable';
-  static VERSION = '1.4.0+pty.integrated';
-  static COMPONENT_TYPE = 'DataStream';
-  static FEATURE_FLAGS = ['TERMINAL', 'LIVE_DATA', 'PTY_MONITOR'];
-  static BUN_TERMINAL = 'Bun.Terminal()';
+  static COMPONENT_ID = "qterm-data@1.4.0-pty.stable";
+  static VERSION = "1.4.0+pty.integrated";
+  static COMPONENT_TYPE = "DataStream";
+  static FEATURE_FLAGS = ["TERMINAL", "LIVE_DATA", "PTY_MONITOR"];
+  static BUN_TERMINAL = "Bun.Terminal()";
   static PTY_DIMENSIONS = { cols: 160, rows: 50 };
-  static TERMINAL_FEATURES = 'REUSABLE_PTY';
-  static RELEASE_TAG = 'pty-stable';
+  static TERMINAL_FEATURES = "REUSABLE_PTY";
+  static RELEASE_TAG = "pty-stable";
 
   // SIMD properties
-  static SIMD_BUFFER = 'SIMD_MULTI';
-  static SPAWN_SYNC = 'FD_OPTIMIZED';
-  static GAIN = '4.7x';
+  static SIMD_BUFFER = "SIMD_MULTI";
+  static SPAWN_SYNC = "FD_OPTIMIZED";
+  static GAIN = "4.7x";
 
   constructor(options = {}) {
     this.id = `qterm-data-${Date.now()}`;
@@ -411,18 +425,18 @@ export class QTermData {
     this.metrics = {
       processesSpawned: 0,
       dataCollected: 0,
-      avgLatency: 0
+      avgLatency: 0,
     };
   }
 
   async init() {
-    if (typeof Bun?.Terminal === 'undefined') return null;
+    if (typeof Bun?.Terminal === "undefined") return null;
 
     // Reusable terminal - can spawn multiple processes
     this.terminal = new Bun.Terminal({
       cols: this.dimensions.cols,
       rows: this.dimensions.rows,
-      data: (term, data) => this.collectData(data)
+      data: (term, data) => this.collectData(data),
     });
 
     return this.terminal;
@@ -452,7 +466,7 @@ export class QTermData {
     const start = performance.now();
     const proc = Bun.spawn([command, ...args], {
       terminal: this.terminal,
-      env: { ...process.env, TERM: 'xterm-256color' }
+      env: { ...process.env, TERM: "xterm-256color" },
     });
 
     this.processes.push(proc);
@@ -460,7 +474,8 @@ export class QTermData {
 
     const latency = performance.now() - start;
     this.metrics.avgLatency =
-      (this.metrics.avgLatency * (this.metrics.processesSpawned - 1) + latency) /
+      (this.metrics.avgLatency * (this.metrics.processesSpawned - 1) +
+        latency) /
       this.metrics.processesSpawned;
 
     return proc;
@@ -498,7 +513,7 @@ export class QTermData {
     return {
       ...this.metrics,
       bufferUsage: this.dataOffset,
-      activeProcesses: this.processes.filter(p => !p.killed).length
+      activeProcesses: this.processes.filter((p) => !p.killed).length,
     };
   }
 }
@@ -526,7 +541,7 @@ export const TerminalComponents = {
         ptyDimensions: QTermScene.PTY_DIMENSIONS,
         terminalFeatures: QTermScene.TERMINAL_FEATURES,
         releaseTag: QTermScene.RELEASE_TAG,
-        gain: QTermScene.GAIN
+        gain: QTermScene.GAIN,
       },
       {
         id: QTermParticles.COMPONENT_ID,
@@ -537,7 +552,7 @@ export const TerminalComponents = {
         ptyDimensions: QTermParticles.PTY_DIMENSIONS,
         terminalFeatures: QTermParticles.TERMINAL_FEATURES,
         releaseTag: QTermParticles.RELEASE_TAG,
-        gain: QTermParticles.GAIN
+        gain: QTermParticles.GAIN,
       },
       {
         id: QTermNetwork.COMPONENT_ID,
@@ -548,7 +563,7 @@ export const TerminalComponents = {
         ptyDimensions: QTermNetwork.PTY_DIMENSIONS,
         terminalFeatures: QTermNetwork.TERMINAL_FEATURES,
         releaseTag: QTermNetwork.RELEASE_TAG,
-        gain: QTermNetwork.GAIN
+        gain: QTermNetwork.GAIN,
       },
       {
         id: QTermData.COMPONENT_ID,
@@ -559,10 +574,10 @@ export const TerminalComponents = {
         ptyDimensions: QTermData.PTY_DIMENSIONS,
         terminalFeatures: QTermData.TERMINAL_FEATURES,
         releaseTag: QTermData.RELEASE_TAG,
-        gain: QTermData.GAIN
-      }
+        gain: QTermData.GAIN,
+      },
     ];
-  }
+  },
 };
 
 export default TerminalComponents;

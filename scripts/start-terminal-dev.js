@@ -3,18 +3,18 @@
  * Starts the Quantum Terminal Dashboard in development mode
  */
 
-const ROOT_DIR = import.meta.dir.replace('/scripts', '');
+const ROOT_DIR = import.meta.dir.replace("/scripts", "");
 
 // ANSI colors
 const COLORS = {
-  reset: '\x1b[0m',
-  bold: '\x1b[1m',
-  dim: '\x1b[2m',
-  cyan: '\x1b[36m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  magenta: '\x1b[35m'
+  reset: "\x1b[0m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+  cyan: "\x1b[36m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  red: "\x1b[31m",
+  magenta: "\x1b[35m",
 };
 
 /**
@@ -37,13 +37,13 @@ ${COLORS.cyan}${COLORS.bold}╔════════════════�
 async function startDev() {
   printBanner();
 
-  const httpPort = parseInt(process.env.HTTP_PORT || '3000');
-  const wsPort = parseInt(process.env.WS_PORT || '3001');
+  const httpPort = parseInt(process.env.HTTP_PORT || "3000");
+  const wsPort = parseInt(process.env.WS_PORT || "3001");
 
   console.log(`${COLORS.cyan}Starting development servers...${COLORS.reset}\n`);
 
   // Import and start servers
-  const { startServers } = await import('../src/servers/http-server.js');
+  const { startServers } = await import("../src/servers/http-server.js");
   const servers = await startServers(httpPort, wsPort);
 
   console.log(`
@@ -61,16 +61,22 @@ ${COLORS.yellow}Press Ctrl+C to stop${COLORS.reset}
 `);
 
   // Watch for file changes (basic hot reload info)
-  console.log(`${COLORS.dim}Watching for changes in ${ROOT_DIR}/src...${COLORS.reset}\n`);
+  console.log(
+    `${COLORS.dim}Watching for changes in ${ROOT_DIR}/src...${COLORS.reset}\n`,
+  );
 
   // Keep process alive
-  process.on('SIGINT', () => {
-    console.log(`\n${COLORS.cyan}Shutting down development servers...${COLORS.reset}`);
+  process.on("SIGINT", () => {
+    console.log(
+      `\n${COLORS.cyan}Shutting down development servers...${COLORS.reset}`,
+    );
     process.exit(0);
   });
 
-  process.on('SIGTERM', () => {
-    console.log(`\n${COLORS.cyan}Shutting down development servers...${COLORS.reset}`);
+  process.on("SIGTERM", () => {
+    console.log(
+      `\n${COLORS.cyan}Shutting down development servers...${COLORS.reset}`,
+    );
     process.exit(0);
   });
 }
@@ -82,18 +88,22 @@ async function runScript(scriptName) {
   console.log(`${COLORS.cyan}Running ${scriptName}...${COLORS.reset}\n`);
 
   switch (scriptName) {
-    case 'ticker':
-      const { start: startTicker } = await import('../src/scripts/financial-ticker.js');
+    case "ticker":
+      const { start: startTicker } =
+        await import("../src/scripts/financial-ticker.js");
       startTicker();
       break;
 
-    case 'monitor':
-      const { start: startMonitor } = await import('../src/scripts/market-monitor.js');
+    case "monitor":
+      const { start: startMonitor } =
+        await import("../src/scripts/market-monitor.js");
       startMonitor();
       break;
 
     default:
-      console.error(`${COLORS.red}Unknown script: ${scriptName}${COLORS.reset}`);
+      console.error(
+        `${COLORS.red}Unknown script: ${scriptName}${COLORS.reset}`,
+      );
       console.log(`Available scripts: ticker, monitor`);
       process.exit(1);
   }
@@ -103,7 +113,7 @@ async function runScript(scriptName) {
 if (import.meta.main) {
   const args = process.argv.slice(2);
 
-  if (args.includes('--help') || args.includes('-h')) {
+  if (args.includes("--help") || args.includes("-h")) {
     console.log(`
 Quantum Terminal Dashboard - Development Server
 
@@ -132,10 +142,10 @@ Examples:
     process.exit(0);
   }
 
-  if (args.includes('--ticker')) {
-    await runScript('ticker');
-  } else if (args.includes('--monitor')) {
-    await runScript('monitor');
+  if (args.includes("--ticker")) {
+    await runScript("ticker");
+  } else if (args.includes("--monitor")) {
+    await runScript("monitor");
   } else {
     await startDev();
   }

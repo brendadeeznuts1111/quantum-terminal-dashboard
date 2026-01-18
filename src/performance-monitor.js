@@ -3,38 +3,38 @@
  * Monitors SIMD, spawn, and IPC performance metrics
  */
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 // ANSI codes for terminal output
 const ANSI = {
-  reset: '\x1b[0m',
-  bold: '\x1b[1m',
-  dim: '\x1b[2m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  red: '\x1b[31m',
-  magenta: '\x1b[35m',
-  bgBlue: '\x1b[44m',
-  white: '\x1b[37m',
-  clearScreen: '\x1b[2J',
-  cursorHome: '\x1b[H',
-  hideCursor: '\x1b[?25l',
-  showCursor: '\x1b[?25h'
+  reset: "\x1b[0m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  cyan: "\x1b[36m",
+  red: "\x1b[31m",
+  magenta: "\x1b[35m",
+  bgBlue: "\x1b[44m",
+  white: "\x1b[37m",
+  clearScreen: "\x1b[2J",
+  cursorHome: "\x1b[H",
+  hideCursor: "\x1b[?25l",
+  showCursor: "\x1b[?25h",
 };
 
 /**
  * Pad string using Bun.stringWidth for accurate terminal alignment
  */
-function padEnd(str, width, char = ' ') {
+function padEnd(str, width, char = " ") {
   const s = String(str);
   const currentWidth = Bun.stringWidth(s);
   if (currentWidth >= width) return s;
   return s + char.repeat(width - currentWidth);
 }
 
-function padStart(str, width, char = ' ') {
+function padStart(str, width, char = " ") {
   const s = String(str);
   const currentWidth = Bun.stringWidth(s);
   if (currentWidth >= width) return s;
@@ -47,30 +47,36 @@ function padStart(str, width, char = ' ') {
 // Bun 1.3.5+ Performance Baselines
 const PERFORMANCE_BASELINES = {
   buffer: {
-    indexOf: { before: 3250, after: 1420, improvement: '2.3x', impact: 'High' },
-    includes: { before: 25.52, after: 21.90, improvement: '1.16x', impact: 'Medium' }
+    indexOf: { before: 3250, after: 1420, improvement: "2.3x", impact: "High" },
+    includes: {
+      before: 25.52,
+      after: 21.9,
+      improvement: "1.16x",
+      impact: "Medium",
+    },
   },
   spawn: {
-    sync: { before: 13, after: 0.4, improvement: '32.5x', impact: 'Critical' }
+    sync: { before: 13, after: 0.4, improvement: "32.5x", impact: "Critical" },
   },
   ipc: {
-    messaging: { improvement: '1.3x', impact: 'High' }
+    messaging: { improvement: "1.3x", impact: "High" },
   },
   promise: {
-    race: { improvement: '1.3x', impact: 'Medium' }
+    race: { improvement: "1.3x", impact: "Medium" },
   },
   response: {
-    json: { before: 2415, after: 700, improvement: '3.5x', impact: 'High' }
-  }
+    json: { before: 2415, after: 700, improvement: "3.5x", impact: "High" },
+  },
 };
 
 class PerformanceMonitor {
   constructor(config = {}) {
     this.config = {
-      httpPort: config.httpPort || parseInt(process.env.PERF_HTTP_PORT || '4000'),
-      wsPort: config.wsPort || parseInt(process.env.PERF_WS_PORT || '4001'),
+      httpPort:
+        config.httpPort || parseInt(process.env.PERF_HTTP_PORT || "4000"),
+      wsPort: config.wsPort || parseInt(process.env.PERF_WS_PORT || "4001"),
       refreshInterval: config.refreshInterval || 1000,
-      ...config
+      ...config,
     };
 
     this.baselines = PERFORMANCE_BASELINES;
@@ -80,7 +86,7 @@ class PerformanceMonitor {
       spawn: { history: [], current: null },
       promise: { history: [], current: null },
       response: { history: [], current: null },
-      memory: { history: [], current: null }
+      memory: { history: [], current: null },
     };
 
     this.simdEnabled = this.detectSIMD();
@@ -94,11 +100,11 @@ class PerformanceMonitor {
    */
   detectSIMD() {
     try {
-      const testBuffer = Buffer.from('x'.repeat(100000) + 'TEST');
+      const testBuffer = Buffer.from("x".repeat(100000) + "TEST");
       const start = performance.now();
 
       for (let i = 0; i < 100; i++) {
-        testBuffer.indexOf('TEST');
+        testBuffer.indexOf("TEST");
       }
 
       const time = performance.now() - start;
@@ -113,15 +119,15 @@ class PerformanceMonitor {
    */
   detectFDOptimization() {
     // Platform-specific spawn optimization info
-    if (process.platform === 'darwin') {
-      return 'posix_spawn (macOS)';
+    if (process.platform === "darwin") {
+      return "posix_spawn (macOS)";
     }
 
-    if (process.platform === 'win32') {
-      return 'CreateProcess (Windows)';
+    if (process.platform === "win32") {
+      return "CreateProcess (Windows)";
     }
 
-    if (process.platform !== 'linux') {
+    if (process.platform !== "linux") {
       return `native (${process.platform})`;
     }
 
@@ -130,14 +136,14 @@ class PerformanceMonitor {
       const times = [];
       for (let i = 0; i < 5; i++) {
         const start = performance.now();
-        Bun.spawnSync(['true']);
+        Bun.spawnSync(["true"]);
         times.push(performance.now() - start);
       }
 
       const avg = times.reduce((a, b) => a + b, 0) / times.length;
-      return avg < 1 ? 'close_range (30x)' : 'iterative';
+      return avg < 1 ? "close_range (30x)" : "iterative";
     } catch {
-      return 'linux (unknown)';
+      return "linux (unknown)";
     }
   }
 
@@ -145,20 +151,21 @@ class PerformanceMonitor {
    * Sample buffer performance
    */
   sampleBufferPerformance() {
-    const testBuffer = Buffer.from('x'.repeat(100000) + 'PERF_TEST');
+    const testBuffer = Buffer.from("x".repeat(100000) + "PERF_TEST");
     const iterations = 1000;
 
     const start = performance.now();
     for (let i = 0; i < iterations; i++) {
-      testBuffer.indexOf('PERF_TEST');
+      testBuffer.indexOf("PERF_TEST");
     }
     const time = performance.now() - start;
 
     const result = {
-      opsPerSec: Math.round(iterations / time * 1000),
+      opsPerSec: Math.round((iterations / time) * 1000),
       time: time.toFixed(2),
-      rating: time < 20 ? 'excellent' : time < 50 ? 'good' : 'needs_optimization',
-      timestamp: Date.now()
+      rating:
+        time < 20 ? "excellent" : time < 50 ? "good" : "needs_optimization",
+      timestamp: Date.now(),
     };
 
     this.metrics.buffer.history.push(result);
@@ -179,7 +186,7 @@ class PerformanceMonitor {
 
     for (let i = 0; i < iterations; i++) {
       const start = performance.now();
-      Bun.spawnSync(['echo', 'test']);
+      Bun.spawnSync(["echo", "test"]);
       times.push(performance.now() - start);
     }
 
@@ -189,8 +196,8 @@ class PerformanceMonitor {
       avgTime: avg.toFixed(3),
       minTime: Math.min(...times).toFixed(3),
       maxTime: Math.max(...times).toFixed(3),
-      rating: avg < 1 ? 'excellent' : avg < 5 ? 'good' : 'needs_optimization',
-      timestamp: Date.now()
+      rating: avg < 1 ? "excellent" : avg < 5 ? "good" : "needs_optimization",
+      timestamp: Date.now(),
     };
 
     this.metrics.spawn.history.push(result);
@@ -210,18 +217,16 @@ class PerformanceMonitor {
 
     const start = performance.now();
     for (let i = 0; i < iterations; i++) {
-      await Promise.race([
-        Promise.resolve(1),
-        Promise.resolve(2)
-      ]);
+      await Promise.race([Promise.resolve(1), Promise.resolve(2)]);
     }
     const time = performance.now() - start;
 
     const result = {
-      opsPerSec: Math.round(iterations / time * 1000),
+      opsPerSec: Math.round((iterations / time) * 1000),
       time: time.toFixed(2),
-      rating: time < 10 ? 'excellent' : time < 50 ? 'good' : 'needs_optimization',
-      timestamp: Date.now()
+      rating:
+        time < 10 ? "excellent" : time < 50 ? "good" : "needs_optimization",
+      timestamp: Date.now(),
     };
 
     this.metrics.promise.history.push(result);
@@ -238,7 +243,10 @@ class PerformanceMonitor {
    */
   sampleResponseJsonPerformance() {
     const testObj = {
-      items: Array.from({ length: 100 }, (_, i) => ({ id: i, value: `item-${i}` }))
+      items: Array.from({ length: 100 }, (_, i) => ({
+        id: i,
+        value: `item-${i}`,
+      })),
     };
     const iterations = 1000;
 
@@ -251,14 +259,17 @@ class PerformanceMonitor {
 
     // Calculate improvement vs baseline (2415ms for 1000 iterations before optimization)
     const baselineTime = 2415;
-    const improvement = (baselineTime / (time * 1000 / iterations)).toFixed(1);
+    const improvement = (baselineTime / ((time * 1000) / iterations)).toFixed(
+      1,
+    );
 
     const result = {
-      opsPerSec: Math.round(iterations / time * 1000),
+      opsPerSec: Math.round((iterations / time) * 1000),
       time: time.toFixed(2),
-      improvement: improvement + 'x',
-      rating: time < 100 ? 'excellent' : time < 500 ? 'good' : 'needs_optimization',
-      timestamp: Date.now()
+      improvement: improvement + "x",
+      rating:
+        time < 100 ? "excellent" : time < 500 ? "good" : "needs_optimization",
+      timestamp: Date.now(),
     };
 
     this.metrics.response.history.push(result);
@@ -282,7 +293,7 @@ class PerformanceMonitor {
       rss: (mem.rss / 1024 / 1024).toFixed(1),
       external: (mem.external / 1024 / 1024).toFixed(1),
       heapPercent: ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.metrics.memory.history.push(result);
@@ -314,7 +325,7 @@ class PerformanceMonitor {
     if (this.simdEnabled) score += 15;
 
     // FD optimization bonus
-    if (this.fdOptimization === 'close_range') score += 10;
+    if (this.fdOptimization === "close_range") score += 10;
 
     return Math.max(0, Math.min(125, score));
   }
@@ -331,7 +342,7 @@ class PerformanceMonitor {
 
     // Calculate gains vs baselines
     const spawnTime = parseFloat(this.metrics.spawn.current?.avgTime || 13);
-    const spawnGain = (13 / spawnTime).toFixed(1) + 'x';
+    const spawnGain = (13 / spawnTime).toFixed(1) + "x";
 
     return {
       buffer: this.metrics.buffer.current,
@@ -348,10 +359,10 @@ class PerformanceMonitor {
       baselines: this.baselines,
       gains: {
         spawn: spawnGain,
-        buffer: this.simdEnabled ? '2x (SIMD)' : '1x',
-        promise: '1.3x',
-        responseJson: this.metrics.response.current?.improvement || '3.5x'
-      }
+        buffer: this.simdEnabled ? "2x (SIMD)" : "1x",
+        promise: "1.3x",
+        responseJson: this.metrics.response.current?.improvement || "3.5x",
+      },
     };
   }
 
@@ -365,11 +376,11 @@ class PerformanceMonitor {
     const wsServer = Bun.serve({
       port: this.config.wsPort,
       fetch(req, server) {
-        if (new URL(req.url).pathname === '/ws') {
+        if (new URL(req.url).pathname === "/ws") {
           const success = server.upgrade(req);
           if (success) return undefined;
         }
-        return new Response('WebSocket endpoint: /ws');
+        return new Response("WebSocket endpoint: /ws");
       },
       websocket: {
         open: (ws) => {
@@ -377,31 +388,35 @@ class PerformanceMonitor {
           console.log(`${ANSI.dim}WebSocket client connected${ANSI.reset}`);
 
           // Send initial data
-          ws.send(JSON.stringify({
-            type: 'init',
-            bunVersion: Bun.version,
-            platform: process.platform,
-            simdEnabled: this.simdEnabled,
-            fdOptimization: this.fdOptimization
-          }));
+          ws.send(
+            JSON.stringify({
+              type: "init",
+              bunVersion: Bun.version,
+              platform: process.platform,
+              simdEnabled: this.simdEnabled,
+              fdOptimization: this.fdOptimization,
+            }),
+          );
         },
         message: (ws, message) => {
           // Handle client requests
           const data = JSON.parse(message);
-          if (data.type === 'request_metrics') {
-            this.collectRealTimeMetrics().then(metrics => {
-              ws.send(JSON.stringify({ type: 'metrics', ...metrics }));
+          if (data.type === "request_metrics") {
+            this.collectRealTimeMetrics().then((metrics) => {
+              ws.send(JSON.stringify({ type: "metrics", ...metrics }));
             });
           }
         },
         close: (ws) => {
           this.wsClients.delete(ws);
           console.log(`${ANSI.dim}WebSocket client disconnected${ANSI.reset}`);
-        }
-      }
+        },
+      },
     });
 
-    console.log(`${ANSI.green}WebSocket server: ws://localhost:${wsServer.port}/ws${ANSI.reset}`);
+    console.log(
+      `${ANSI.green}WebSocket server: ws://localhost:${wsServer.port}/ws${ANSI.reset}`,
+    );
 
     // Start HTTP server for web dashboard
     const httpServer = Bun.serve({
@@ -409,36 +424,38 @@ class PerformanceMonitor {
       fetch: async (req) => {
         const url = new URL(req.url);
 
-        if (url.pathname === '/') {
+        if (url.pathname === "/") {
           return new Response(this.generateDashboardHTML(), {
-            headers: { 'Content-Type': 'text/html' }
+            headers: { "Content-Type": "text/html" },
           });
         }
 
-        if (url.pathname === '/api/metrics') {
+        if (url.pathname === "/api/metrics") {
           const metrics = await this.collectRealTimeMetrics();
           return Response.json(metrics);
         }
 
-        if (url.pathname === '/health') {
+        if (url.pathname === "/health") {
           return Response.json({
-            status: 'ok',
+            status: "ok",
             uptime: Math.round((Date.now() - this.startTime) / 1000),
-            score: this.calculatePerformanceScore()
+            score: this.calculatePerformanceScore(),
           });
         }
 
-        return new Response('Not found', { status: 404 });
-      }
+        return new Response("Not found", { status: 404 });
+      },
     });
 
-    console.log(`${ANSI.green}HTTP dashboard: http://localhost:${httpServer.port}${ANSI.reset}`);
+    console.log(
+      `${ANSI.green}HTTP dashboard: http://localhost:${httpServer.port}${ANSI.reset}`,
+    );
 
     // Start metrics broadcast interval
     setInterval(async () => {
       if (this.wsClients.size > 0) {
         const metrics = await this.collectRealTimeMetrics();
-        const message = JSON.stringify({ type: 'metrics', ...metrics });
+        const message = JSON.stringify({ type: "metrics", ...metrics });
 
         for (const client of this.wsClients) {
           try {
@@ -883,48 +900,79 @@ class PerformanceMonitor {
       process.stdout.write(ANSI.clearScreen + ANSI.cursorHome);
 
       // Header
-      console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${'═'.repeat(cols)}${ANSI.reset}`);
-      const title = '  QUANTUM PERFORMANCE MONITOR';
+      console.log(
+        `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${"═".repeat(cols)}${ANSI.reset}`,
+      );
+      const title = "  QUANTUM PERFORMANCE MONITOR";
       const time = new Date().toLocaleTimeString();
       const padding = cols - Bun.stringWidth(title) - Bun.stringWidth(time) - 4;
-      console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${title}${' '.repeat(Math.max(0, padding))}${time}  ${ANSI.reset}`);
-      console.log(`${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${'═'.repeat(cols)}${ANSI.reset}`);
+      console.log(
+        `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${title}${" ".repeat(Math.max(0, padding))}${time}  ${ANSI.reset}`,
+      );
+      console.log(
+        `${ANSI.bgBlue}${ANSI.white}${ANSI.bold}${"═".repeat(cols)}${ANSI.reset}`,
+      );
       console.log();
 
       // Score
-      const scoreColor = metrics.score >= 100 ? ANSI.green : metrics.score >= 70 ? ANSI.yellow : ANSI.red;
-      console.log(`  ${ANSI.bold}Performance Score:${ANSI.reset} ${scoreColor}${metrics.score}/125${ANSI.reset}`);
+      const scoreColor =
+        metrics.score >= 100
+          ? ANSI.green
+          : metrics.score >= 70
+            ? ANSI.yellow
+            : ANSI.red;
+      console.log(
+        `  ${ANSI.bold}Performance Score:${ANSI.reset} ${scoreColor}${metrics.score}/125${ANSI.reset}`,
+      );
       console.log();
 
       // Buffer SIMD
       console.log(`  ${ANSI.bold}${ANSI.cyan}Buffer SIMD${ANSI.reset}`);
-      console.log(`    Ops/sec: ${ANSI.green}${metrics.buffer?.opsPerSec?.toLocaleString() || '--'}${ANSI.reset}`);
-      console.log(`    Time: ${metrics.buffer?.time || '--'}ms`);
-      console.log(`    SIMD: ${metrics.simdEnabled ? `${ANSI.green}ENABLED${ANSI.reset}` : `${ANSI.red}DISABLED${ANSI.reset}`}`);
+      console.log(
+        `    Ops/sec: ${ANSI.green}${metrics.buffer?.opsPerSec?.toLocaleString() || "--"}${ANSI.reset}`,
+      );
+      console.log(`    Time: ${metrics.buffer?.time || "--"}ms`);
+      console.log(
+        `    SIMD: ${metrics.simdEnabled ? `${ANSI.green}ENABLED${ANSI.reset}` : `${ANSI.red}DISABLED${ANSI.reset}`}`,
+      );
       console.log();
 
       // Spawn Performance
       console.log(`  ${ANSI.bold}${ANSI.cyan}Spawn Performance${ANSI.reset}`);
-      console.log(`    Avg Time: ${ANSI.green}${metrics.spawn?.avgTime || '--'}ms${ANSI.reset}`);
-      console.log(`    FD Opt: ${metrics.fdOptimization === 'close_range' ? `${ANSI.green}close_range${ANSI.reset}` : metrics.fdOptimization}`);
+      console.log(
+        `    Avg Time: ${ANSI.green}${metrics.spawn?.avgTime || "--"}ms${ANSI.reset}`,
+      );
+      console.log(
+        `    FD Opt: ${metrics.fdOptimization === "close_range" ? `${ANSI.green}close_range${ANSI.reset}` : metrics.fdOptimization}`,
+      );
       console.log();
 
       // Promise.race
       console.log(`  ${ANSI.bold}${ANSI.cyan}Promise.race${ANSI.reset}`);
-      console.log(`    Ops/sec: ${ANSI.green}${metrics.promise?.opsPerSec?.toLocaleString() || '--'}${ANSI.reset}`);
+      console.log(
+        `    Ops/sec: ${ANSI.green}${metrics.promise?.opsPerSec?.toLocaleString() || "--"}${ANSI.reset}`,
+      );
       console.log();
 
       // Response.json
-      console.log(`  ${ANSI.bold}${ANSI.cyan}Response.json() (3.5x faster)${ANSI.reset}`);
-      console.log(`    Ops/sec: ${ANSI.green}${metrics.response?.opsPerSec?.toLocaleString() || '--'}${ANSI.reset}`);
-      console.log(`    Time: ${metrics.response?.time || '--'}ms`);
-      console.log(`    Gain: ${ANSI.green}${metrics.response?.improvement || '--'}${ANSI.reset}`);
+      console.log(
+        `  ${ANSI.bold}${ANSI.cyan}Response.json() (3.5x faster)${ANSI.reset}`,
+      );
+      console.log(
+        `    Ops/sec: ${ANSI.green}${metrics.response?.opsPerSec?.toLocaleString() || "--"}${ANSI.reset}`,
+      );
+      console.log(`    Time: ${metrics.response?.time || "--"}ms`);
+      console.log(
+        `    Gain: ${ANSI.green}${metrics.response?.improvement || "--"}${ANSI.reset}`,
+      );
       console.log();
 
       // Memory
       console.log(`  ${ANSI.bold}${ANSI.cyan}Memory${ANSI.reset}`);
-      console.log(`    Heap: ${metrics.memory?.heapUsed || '--'}MB / ${metrics.memory?.heapTotal || '--'}MB`);
-      console.log(`    RSS: ${metrics.memory?.rss || '--'}MB`);
+      console.log(
+        `    Heap: ${metrics.memory?.heapUsed || "--"}MB / ${metrics.memory?.heapTotal || "--"}MB`,
+      );
+      console.log(`    RSS: ${metrics.memory?.rss || "--"}MB`);
       console.log();
 
       // System
@@ -934,7 +982,7 @@ class PerformanceMonitor {
       console.log(`    Uptime: ${metrics.uptime}s`);
       console.log();
 
-      console.log(`${ANSI.dim}${'─'.repeat(cols)}${ANSI.reset}`);
+      console.log(`${ANSI.dim}${"─".repeat(cols)}${ANSI.reset}`);
       console.log(`${ANSI.dim}Press Ctrl+C to exit${ANSI.reset}`);
     };
 
@@ -945,7 +993,7 @@ class PerformanceMonitor {
     const interval = setInterval(render, this.config.refreshInterval);
 
     // Handle exit
-    process.on('SIGINT', () => {
+    process.on("SIGINT", () => {
       clearInterval(interval);
       process.stdout.write(ANSI.showCursor);
       process.stdout.write(ANSI.clearScreen + ANSI.cursorHome);
@@ -959,18 +1007,20 @@ class PerformanceMonitor {
 if (import.meta.main) {
   const args = Bun.argv.slice(2);
   const monitor = new PerformanceMonitor({
-    httpPort: parseInt(process.env.PERF_HTTP_PORT || '4000'),
-    wsPort: parseInt(process.env.PERF_WS_PORT || '4001'),
-    refreshInterval: parseInt(process.env.REFRESH_INTERVAL || '1000')
+    httpPort: parseInt(process.env.PERF_HTTP_PORT || "4000"),
+    wsPort: parseInt(process.env.PERF_WS_PORT || "4001"),
+    refreshInterval: parseInt(process.env.REFRESH_INTERVAL || "1000"),
   });
 
-  if (args.includes('--terminal') || args.includes('-t')) {
+  if (args.includes("--terminal") || args.includes("-t")) {
     // Terminal-only mode
     await monitor.runTerminalDashboard();
   } else {
     // Start web servers
     await monitor.startMonitoring();
-    console.log(`\n${ANSI.dim}Use --terminal for terminal-only mode${ANSI.reset}`);
+    console.log(
+      `\n${ANSI.dim}Use --terminal for terminal-only mode${ANSI.reset}`,
+    );
   }
 }
 

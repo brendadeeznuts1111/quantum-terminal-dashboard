@@ -3,9 +3,12 @@
  * Builds the Quantum Terminal Dashboard with feature flag profiles
  */
 
-import { mkdir, rm } from 'fs/promises';
-import { join } from 'path';
-import { QuantumTerminalEngine, hasFeature } from './quantum-terminal-engine.js';
+import { mkdir, rm } from "fs/promises";
+import { join } from "path";
+import {
+  QuantumTerminalEngine,
+  hasFeature,
+} from "./quantum-terminal-engine.js";
 
 class TerminalBuildPipeline {
   constructor() {
@@ -16,43 +19,49 @@ class TerminalBuildPipeline {
 
   initializeProfiles() {
     // Define build profiles with terminal features
-    this.buildProfiles.set('desktop-terminal', {
-      name: 'Desktop with Terminal',
-      features: ['TERMINAL', 'WEBGL', 'PREMIUM', 'SIMD_ACCELERATED', 'PTY_SUPPORT'],
+    this.buildProfiles.set("desktop-terminal", {
+      name: "Desktop with Terminal",
+      features: [
+        "TERMINAL",
+        "WEBGL",
+        "PREMIUM",
+        "SIMD_ACCELERATED",
+        "PTY_SUPPORT",
+      ],
       terminal: true,
       webgl: true,
       dimensions: { cols: 120, rows: 40 },
       minify: true,
-      target: 'browser'
+      target: "browser",
     });
 
-    this.buildProfiles.set('mobile-terminal', {
-      name: 'Mobile with Terminal',
-      features: ['TERMINAL', 'WEBGL', 'MOBILE_OPTIMIZED'],
+    this.buildProfiles.set("mobile-terminal", {
+      name: "Mobile with Terminal",
+      features: ["TERMINAL", "WEBGL", "MOBILE_OPTIMIZED"],
       terminal: true,
       webgl: true,
       dimensions: { cols: 60, rows: 20 },
       minify: true,
-      target: 'browser'
+      target: "browser",
     });
 
-    this.buildProfiles.set('server-terminal', {
-      name: 'Server Terminal',
-      features: ['TERMINAL', 'PTY_SUPPORT', 'NETWORK_VISUALIZATION'],
+    this.buildProfiles.set("server-terminal", {
+      name: "Server Terminal",
+      features: ["TERMINAL", "PTY_SUPPORT", "NETWORK_VISUALIZATION"],
       terminal: true,
       webgl: false,
       dimensions: { cols: 80, rows: 24 },
       minify: true,
-      target: 'node'
+      target: "node",
     });
 
-    this.buildProfiles.set('no-terminal', {
-      name: 'No Terminal',
-      features: ['WEBGL', 'SIMD_ACCELERATED'],
+    this.buildProfiles.set("no-terminal", {
+      name: "No Terminal",
+      features: ["WEBGL", "SIMD_ACCELERATED"],
       terminal: false,
       webgl: true,
       minify: true,
-      target: 'browser'
+      target: "browser",
     });
   }
 
@@ -61,17 +70,17 @@ class TerminalBuildPipeline {
     if (!profile) throw new Error(`Unknown profile: ${profileName}`);
 
     console.log(`\nBuilding ${profile.name}...`);
-    console.log(`   Features: ${profile.features.join(', ')}`);
-    console.log(`   Terminal: ${profile.terminal ? 'Enabled' : 'Disabled'}`);
+    console.log(`   Features: ${profile.features.join(", ")}`);
+    console.log(`   Terminal: ${profile.terminal ? "Enabled" : "Disabled"}`);
     console.log(`   Target: ${profile.target}`);
 
     // Determine output directory
-    const rootDir = import.meta.dir.replace('/src', '');
+    const rootDir = import.meta.dir.replace("/src", "");
     const outdir = join(
       rootDir,
-      'builds',
-      profile.terminal ? 'with-terminal' : 'without-terminal',
-      profileName.replace('-terminal', '').replace('no-', '')
+      "builds",
+      profile.terminal ? "with-terminal" : "without-terminal",
+      profileName.replace("-terminal", "").replace("no-", ""),
     );
 
     // Clean and create output directory
@@ -96,21 +105,21 @@ class TerminalBuildPipeline {
     try {
       // Build with feature flags
       const result = await Bun.build({
-        entrypoints: [join(rootDir, 'src/quantum-app.ts')],
+        entrypoints: [join(rootDir, "src/quantum-app.ts")],
         outdir,
-        target: profile.target === 'node' ? 'node' : 'browser',
-        format: 'esm',
+        target: profile.target === "node" ? "node" : "browser",
+        format: "esm",
         minify: profile.minify,
-        sourcemap: 'external',
-        splitting: profile.target === 'browser',
+        sourcemap: "external",
+        splitting: profile.target === "browser",
         define: {
-          'process.env.TERMINAL_ENABLED': JSON.stringify(profile.terminal),
-          'process.env.TERMINAL_DIMENSIONS': JSON.stringify(profile.dimensions),
-          'process.env.BUILD_PROFILE': JSON.stringify(profileName),
-          'process.env.BUILD_TIMESTAMP': JSON.stringify(Date.now()),
-          'process.env.FEATURES': JSON.stringify(profile.features)
+          "process.env.TERMINAL_ENABLED": JSON.stringify(profile.terminal),
+          "process.env.TERMINAL_DIMENSIONS": JSON.stringify(profile.dimensions),
+          "process.env.BUILD_PROFILE": JSON.stringify(profileName),
+          "process.env.BUILD_TIMESTAMP": JSON.stringify(Date.now()),
+          "process.env.FEATURES": JSON.stringify(profile.features),
         },
-        external: profile.target === 'node' ? ['react', 'react-dom'] : []
+        external: profile.target === "node" ? ["react", "react-dom"] : [],
       });
 
       const buildTime = Date.now() - startTime;
@@ -132,17 +141,17 @@ class TerminalBuildPipeline {
           buildTime,
           totalSize,
           analysis,
-          outputs: result.outputs.map(o => ({
+          outputs: result.outputs.map((o) => ({
             path: o.path,
             size: o.size,
-            kind: o.kind
+            kind: o.kind,
           })),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
 
         await Bun.write(
-          join(outdir, 'build-manifest.json'),
-          JSON.stringify(manifest, null, 2)
+          join(outdir, "build-manifest.json"),
+          JSON.stringify(manifest, null, 2),
         );
 
         console.log(`   Output files: ${result.outputs.length}`);
@@ -162,8 +171,8 @@ class TerminalBuildPipeline {
   }
 
   async buildAllProfiles() {
-    console.log('Quantum Terminal Dashboard - Build Pipeline');
-    console.log('='.repeat(50));
+    console.log("Quantum Terminal Dashboard - Build Pipeline");
+    console.log("=".repeat(50));
 
     const results = new Map();
     const startTime = Date.now();
@@ -180,26 +189,28 @@ class TerminalBuildPipeline {
     await this.generateComparisonReport(results);
 
     // Summary
-    console.log('\n' + '='.repeat(50));
-    console.log('Build Summary');
-    console.log('='.repeat(50));
+    console.log("\n" + "=".repeat(50));
+    console.log("Build Summary");
+    console.log("=".repeat(50));
 
-    const successful = [...results.values()].filter(r => r.success);
-    const failed = [...results.values()].filter(r => !r.success);
+    const successful = [...results.values()].filter((r) => r.success);
+    const failed = [...results.values()].filter((r) => !r.success);
 
     console.log(`\nSuccessful: ${successful.length}/${results.size}`);
 
     if (successful.length > 0) {
-      console.log('\nBuilt profiles:');
-      successful.forEach(r => {
-        console.log(`  + ${r.profile}: ${(r.manifest.totalSize / 1024).toFixed(1)} KB`);
+      console.log("\nBuilt profiles:");
+      successful.forEach((r) => {
+        console.log(
+          `  + ${r.profile}: ${(r.manifest.totalSize / 1024).toFixed(1)} KB`,
+        );
       });
     }
 
     if (failed.length > 0) {
-      console.log('\nFailed profiles:');
-      failed.forEach(r => {
-        console.log(`  - ${r.profile}: ${r.error || 'Unknown error'}`);
+      console.log("\nFailed profiles:");
+      failed.forEach((r) => {
+        console.log(`  - ${r.profile}: ${r.error || "Unknown error"}`);
       });
     }
 
@@ -210,9 +221,9 @@ class TerminalBuildPipeline {
 
   // COMPILE-TIME FEATURE ANALYSIS
   async analyzeBuild(result, profile) {
-    let output = '';
+    let output = "";
     try {
-      output = await result.outputs[0]?.text() || '';
+      output = (await result.outputs[0]?.text()) || "";
     } catch {}
 
     const analysis = {
@@ -220,16 +231,19 @@ class TerminalBuildPipeline {
       size: result.outputs[0]?.size || 0,
       features: profile.features.length,
       terminalIncluded: profile.terminal,
-      hasTerminalCode: output.includes('Bun.Terminal') || output.includes('terminal.data'),
-      hasWebGLCode: output.includes('THREE') || output.includes('WebGL'),
-      hasFeatureFlags: output.includes('feature('),
-      estimatedPerformance: this.estimatePerformance(profile)
+      hasTerminalCode:
+        output.includes("Bun.Terminal") || output.includes("terminal.data"),
+      hasWebGLCode: output.includes("THREE") || output.includes("WebGL"),
+      hasFeatureFlags: output.includes("feature("),
+      estimatedPerformance: this.estimatePerformance(profile),
     };
 
-    console.log('   Build Analysis:');
+    console.log("   Build Analysis:");
     console.log(`   - Size: ${(analysis.size / 1024).toFixed(1)}KB`);
-    console.log(`   - Terminal code: ${analysis.hasTerminalCode ? 'Yes' : 'No'}`);
-    console.log(`   - WebGL code: ${analysis.hasWebGLCode ? 'Yes' : 'No'}`);
+    console.log(
+      `   - Terminal code: ${analysis.hasTerminalCode ? "Yes" : "No"}`,
+    );
+    console.log(`   - WebGL code: ${analysis.hasWebGLCode ? "Yes" : "No"}`);
     console.log(`   - Performance: ${analysis.estimatedPerformance}`);
 
     return analysis;
@@ -238,21 +252,21 @@ class TerminalBuildPipeline {
   estimatePerformance(profile) {
     let score = 100;
 
-    if (profile.features.includes('TERMINAL')) score -= 10;
-    if (profile.features.includes('WEBGL')) score -= 15;
-    if (profile.features.includes('SIMD_ACCELERATED')) score += 20;
-    if (profile.features.includes('PTY_SUPPORT')) score -= 5;
-    if (profile.features.includes('PREMIUM')) score -= 5;
+    if (profile.features.includes("TERMINAL")) score -= 10;
+    if (profile.features.includes("WEBGL")) score -= 15;
+    if (profile.features.includes("SIMD_ACCELERATED")) score += 20;
+    if (profile.features.includes("PTY_SUPPORT")) score -= 5;
+    if (profile.features.includes("PREMIUM")) score -= 5;
 
-    return score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Moderate';
+    return score >= 80 ? "Excellent" : score >= 60 ? "Good" : "Moderate";
   }
 
   async generateComparisonReport(results) {
-    const rootDir = import.meta.dir.replace('/src', '');
+    const rootDir = import.meta.dir.replace("/src", "");
 
     const report = {
       generated: new Date().toISOString(),
-      profiles: []
+      profiles: [],
     };
 
     for (const [name, result] of results) {
@@ -261,7 +275,7 @@ class TerminalBuildPipeline {
           name,
           ...result.manifest.analysis,
           totalSize: result.manifest.totalSize,
-          buildTime: result.manifest.buildTime
+          buildTime: result.manifest.buildTime,
         });
       }
     }
@@ -270,17 +284,17 @@ class TerminalBuildPipeline {
     report.profiles.sort((a, b) => a.totalSize - b.totalSize);
 
     await Bun.write(
-      join(rootDir, 'builds', 'comparison-report.json'),
-      JSON.stringify(report, null, 2)
+      join(rootDir, "builds", "comparison-report.json"),
+      JSON.stringify(report, null, 2),
     );
 
-    console.log('\nComparison report saved to builds/comparison-report.json');
+    console.log("\nComparison report saved to builds/comparison-report.json");
   }
 
   // TEST FEATURE FLAG ELIMINATION
   async testFeatureFlags() {
-    console.log('\nTesting Feature Flag Elimination');
-    console.log('='.repeat(50));
+    console.log("\nTesting Feature Flag Elimination");
+    console.log("=".repeat(50));
 
     const testCode = `
       const hasTerminal = typeof feature === 'function' ? feature('TERMINAL') : false;
@@ -310,10 +324,10 @@ class TerminalBuildPipeline {
     `;
 
     const configs = [
-      { name: 'all-features', features: ['TERMINAL', 'WEBGL', 'PREMIUM'] },
-      { name: 'terminal-only', features: ['TERMINAL'] },
-      { name: 'webgl-only', features: ['WEBGL'] },
-      { name: 'no-features', features: [] }
+      { name: "all-features", features: ["TERMINAL", "WEBGL", "PREMIUM"] },
+      { name: "terminal-only", features: ["TERMINAL"] },
+      { name: "webgl-only", features: ["WEBGL"] },
+      { name: "no-features", features: [] },
     ];
 
     const results = [];
@@ -322,28 +336,32 @@ class TerminalBuildPipeline {
       try {
         // Note: Bun.build with inline files may not support all options
         // This is a simplified test
-        console.log(`\nTesting ${config.name} (${config.features.join(', ') || 'none'}):`);
+        console.log(
+          `\nTesting ${config.name} (${config.features.join(", ") || "none"}):`,
+        );
 
         const defines = {};
-        config.features.forEach(f => {
-          defines[`FEATURE_${f}`] = 'true';
+        config.features.forEach((f) => {
+          defines[`FEATURE_${f}`] = "true";
         });
 
         // Simulate build analysis
-        const hasTerminal = config.features.includes('TERMINAL');
-        const hasWebGL = config.features.includes('WEBGL');
-        const hasPremium = config.features.includes('PREMIUM');
+        const hasTerminal = config.features.includes("TERMINAL");
+        const hasWebGL = config.features.includes("WEBGL");
+        const hasPremium = config.features.includes("PREMIUM");
 
-        console.log(`   Terminal code: ${hasTerminal ? 'included' : 'excluded'}`);
-        console.log(`   WebGL code: ${hasWebGL ? 'included' : 'excluded'}`);
-        console.log(`   Premium code: ${hasPremium ? 'included' : 'excluded'}`);
+        console.log(
+          `   Terminal code: ${hasTerminal ? "included" : "excluded"}`,
+        );
+        console.log(`   WebGL code: ${hasWebGL ? "included" : "excluded"}`);
+        console.log(`   Premium code: ${hasPremium ? "included" : "excluded"}`);
 
         results.push({
           config: config.name,
           features: config.features,
           terminalIncluded: hasTerminal,
           webglIncluded: hasWebGL,
-          premiumIncluded: hasPremium
+          premiumIncluded: hasPremium,
         });
       } catch (error) {
         console.error(`   Error: ${error.message}`);
@@ -359,7 +377,7 @@ if (import.meta.main) {
   const args = Bun.argv.slice(2);
   const pipeline = new TerminalBuildPipeline();
 
-  if (args.includes('--help') || args.includes('-h')) {
+  if (args.includes("--help") || args.includes("-h")) {
     console.log(`
 Quantum Terminal Dashboard - Build Pipeline
 
@@ -387,30 +405,32 @@ Examples:
     process.exit(0);
   }
 
-  if (args.includes('--list')) {
-    console.log('Available build profiles:\n');
+  if (args.includes("--list")) {
+    console.log("Available build profiles:\n");
     for (const [name, profile] of pipeline.buildProfiles) {
       console.log(`  ${name}`);
       console.log(`    Name: ${profile.name}`);
-      console.log(`    Features: ${profile.features.join(', ')}`);
-      console.log(`    Terminal: ${profile.terminal ? 'Yes' : 'No'}`);
+      console.log(`    Features: ${profile.features.join(", ")}`);
+      console.log(`    Terminal: ${profile.terminal ? "Yes" : "No"}`);
       console.log(`    Target: ${profile.target}`);
       console.log();
     }
     process.exit(0);
   }
 
-  if (args.includes('--test-features')) {
+  if (args.includes("--test-features")) {
     await pipeline.testFeatureFlags();
     process.exit(0);
   }
 
-  if (args.includes('--build')) {
-    const idx = args.indexOf('--build');
+  if (args.includes("--build")) {
+    const idx = args.indexOf("--build");
     const profileName = args[idx + 1];
 
     if (!profileName || !pipeline.buildProfiles.has(profileName)) {
-      console.error(`Invalid profile. Available: ${[...pipeline.buildProfiles.keys()].join(', ')}`);
+      console.error(
+        `Invalid profile. Available: ${[...pipeline.buildProfiles.keys()].join(", ")}`,
+      );
       process.exit(1);
     }
 
@@ -418,12 +438,12 @@ Examples:
     process.exit(0);
   }
 
-  if (args.includes('--build-all') || args.length === 0) {
+  if (args.includes("--build-all") || args.length === 0) {
     await pipeline.buildAllProfiles();
     process.exit(0);
   }
 
-  console.log('Unknown command. Use --help for options.');
+  console.log("Unknown command. Use --help for options.");
   process.exit(1);
 }
 

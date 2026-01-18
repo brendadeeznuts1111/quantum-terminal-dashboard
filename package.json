@@ -1,6 +1,6 @@
 {
   "name": "quantum-terminal-dashboard",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.1",
   "type": "module",
   "description": "PTY-enabled financial terminal dashboard with Bun.Terminal integration",
   "main": "src/quantum-app.ts",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",
+    "@xterm/addon-web-links": "^0.12.0",
     "@xterm/xterm": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -101,7 +102,9 @@
   "features": {
     "terminal": {
       "description": "PTY terminal integration with Bun.Terminal",
-      "requires": ["posix"],
+      "requires": [
+        "posix"
+      ],
       "runtime": "bun >=1.0.0"
     },
     "webgl": {
@@ -110,18 +113,32 @@
     },
     "premium": {
       "description": "Premium features for advanced users",
-      "requires": ["terminal", "webgl"]
+      "requires": [
+        "terminal",
+        "webgl"
+      ]
     },
     "pty_support": {
       "description": "Full PTY support for interactive terminals",
-      "requires": ["terminal"],
-      "platforms": ["darwin", "linux"]
+      "requires": [
+        "terminal"
+      ],
+      "platforms": [
+        "darwin",
+        "linux"
+      ]
     }
   },
   "build": {
     "profiles": {
       "desktop-terminal": {
-        "features": ["TERMINAL", "WEBGL", "PREMIUM", "SIMD_ACCELERATED", "PTY_SUPPORT"],
+        "features": [
+          "TERMINAL",
+          "WEBGL",
+          "PREMIUM",
+          "SIMD_ACCELERATED",
+          "PTY_SUPPORT"
+        ],
         "terminal": true,
         "dimensions": {
           "cols": 120,
@@ -129,7 +146,11 @@
         }
       },
       "mobile-terminal": {
-        "features": ["TERMINAL", "WEBGL", "MOBILE_OPTIMIZED"],
+        "features": [
+          "TERMINAL",
+          "WEBGL",
+          "MOBILE_OPTIMIZED"
+        ],
         "terminal": true,
         "dimensions": {
           "cols": 60,
@@ -137,7 +158,11 @@
         }
       },
       "server-terminal": {
-        "features": ["TERMINAL", "PTY_SUPPORT", "NETWORK_VISUALIZATION"],
+        "features": [
+          "TERMINAL",
+          "PTY_SUPPORT",
+          "NETWORK_VISUALIZATION"
+        ],
         "terminal": true,
         "dimensions": {
           "cols": 80,
@@ -145,7 +170,10 @@
         }
       },
       "no-terminal": {
-        "features": ["WEBGL", "SIMD_ACCELERATED"],
+        "features": [
+          "WEBGL",
+          "SIMD_ACCELERATED"
+        ],
         "terminal": false
       }
     }

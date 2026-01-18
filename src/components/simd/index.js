@@ -9,11 +9,11 @@
  * - QSIMDData: DataStream with BUFFER_INDEXOF_2X (4.7x gain)
  */
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 // Version info
-const VERSION = '1.4.5-simd.4';
-const RELEASE_TAG = 'simd-stable';
+const VERSION = "1.4.5-simd.4";
+const RELEASE_TAG = "simd-stable";
 
 /**
  * QSIMDScene - THREE.Scene with SIMD optimizations
@@ -22,15 +22,15 @@ const RELEASE_TAG = 'simd-stable';
  * @gain 5.8x
  */
 export class QSIMDScene {
-  static VERSION = '1.4.5-simd.1';
-  static COMPONENT_TYPE = 'THREE.Scene';
-  static FEATURES = ['BUFFER_2X', 'IPC_FAST', 'NODE_FAST'];
-  static SIMD_BUFFER = 'SIMD_ENABLED';
-  static NODE_LOAD = 'FAST_NODE';
-  static IPC_SPEED = 'IPC_OPTIMIZED';
-  static SPAWN_SYNC = '30X_FASTER';
-  static GAIN = '5.8x';
-  static TAG = 'simd-alpha';
+  static VERSION = "1.4.5-simd.1";
+  static COMPONENT_TYPE = "THREE.Scene";
+  static FEATURES = ["BUFFER_2X", "IPC_FAST", "NODE_FAST"];
+  static SIMD_BUFFER = "SIMD_ENABLED";
+  static NODE_LOAD = "FAST_NODE";
+  static IPC_SPEED = "IPC_OPTIMIZED";
+  static SPAWN_SYNC = "30X_FASTER";
+  static GAIN = "5.8x";
+  static TAG = "simd-alpha";
 
   constructor(options = {}) {
     this.id = `qsimd-scene-${Date.now()}`;
@@ -42,14 +42,14 @@ export class QSIMDScene {
       renders: 0,
       bufferOps: 0,
       ipcMessages: 0,
-      avgRenderTime: 0
+      avgRenderTime: 0,
     };
 
     this.config = {
       maxObjects: options.maxObjects || 10000,
       bufferPoolSize: options.bufferPoolSize || 64 * 1024, // 64KB
       ipcBatchSize: options.ipcBatchSize || 100,
-      ...options
+      ...options,
     };
 
     this.initBufferPool();
@@ -73,7 +73,7 @@ export class QSIMDScene {
     this.objects.set(id, {
       data: obj,
       buffer: serialized,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     return id;
@@ -84,7 +84,7 @@ export class QSIMDScene {
    */
   serializeObject(obj) {
     const json = JSON.stringify(obj);
-    const buffer = Buffer.from(json, 'utf8');
+    const buffer = Buffer.from(json, "utf8");
     this.metrics.bufferOps++;
     return buffer;
   }
@@ -93,7 +93,7 @@ export class QSIMDScene {
    * Fast object lookup using SIMD Buffer.indexOf
    */
   findObjectByPattern(pattern) {
-    const patternBuffer = Buffer.from(pattern, 'utf8');
+    const patternBuffer = Buffer.from(pattern, "utf8");
     const results = [];
 
     for (const [id, entry] of this.objects) {
@@ -141,7 +141,7 @@ export class QSIMDScene {
     return {
       ...this.metrics,
       objectCount: this.objects.size,
-      bufferPoolUsage: this.bufferPool.length
+      bufferPoolUsage: this.bufferPool.length,
     };
   }
 }
@@ -153,34 +153,34 @@ export class QSIMDScene {
  * @gain 32.5x
  */
 export class QSIMDParticles {
-  static VERSION = '1.4.5-simd.2';
-  static COMPONENT_TYPE = 'ParticleSystem';
-  static FEATURES = ['BUFFER_INCLUDES_2X', 'SPAWN_30X'];
-  static SIMD_BUFFER = 'SIMD_2X';
-  static NODE_LOAD = 'EMBEDDED_FAST';
-  static IPC_SPEED = 'IPC_STREAMING';
-  static SPAWN_SYNC = 'CLOSE_RANGE_FIX';
-  static GAIN = '32.5x';
-  static TAG = 'simd-beta';
+  static VERSION = "1.4.5-simd.2";
+  static COMPONENT_TYPE = "ParticleSystem";
+  static FEATURES = ["BUFFER_INCLUDES_2X", "SPAWN_30X"];
+  static SIMD_BUFFER = "SIMD_2X";
+  static NODE_LOAD = "EMBEDDED_FAST";
+  static IPC_SPEED = "IPC_STREAMING";
+  static SPAWN_SYNC = "CLOSE_RANGE_FIX";
+  static GAIN = "32.5x";
+  static TAG = "simd-beta";
 
   constructor(options = {}) {
     this.id = `qsimd-particles-${Date.now()}`;
     this.particles = [];
     this.spawnOptimized = true;
-    this.closeRangeFix = process.platform === 'linux';
+    this.closeRangeFix = process.platform === "linux";
 
     this.config = {
       maxParticles: options.maxParticles || 100000,
       spawnBatchSize: options.spawnBatchSize || 1000,
       updateInterval: options.updateInterval || 16, // ~60fps
-      ...options
+      ...options,
     };
 
     this.metrics = {
       spawned: 0,
       updated: 0,
       avgSpawnTime: 0,
-      avgUpdateTime: 0
+      avgUpdateTime: 0,
     };
   }
 
@@ -197,21 +197,23 @@ export class QSIMDParticles {
     for (let b = 0; b < batches; b++) {
       const batchSize = Math.min(
         this.config.spawnBatchSize,
-        count - b * this.config.spawnBatchSize
+        count - b * this.config.spawnBatchSize,
       );
 
       for (let i = 0; i < batchSize; i++) {
-        const particle = generator ? generator(i + b * this.config.spawnBatchSize) : {
-          id: this.particles.length + newParticles.length,
-          x: Math.random() * 1000,
-          y: Math.random() * 1000,
-          z: Math.random() * 1000,
-          vx: (Math.random() - 0.5) * 10,
-          vy: (Math.random() - 0.5) * 10,
-          vz: (Math.random() - 0.5) * 10,
-          life: 1.0,
-          color: Math.floor(Math.random() * 0xFFFFFF)
-        };
+        const particle = generator
+          ? generator(i + b * this.config.spawnBatchSize)
+          : {
+              id: this.particles.length + newParticles.length,
+              x: Math.random() * 1000,
+              y: Math.random() * 1000,
+              z: Math.random() * 1000,
+              vx: (Math.random() - 0.5) * 10,
+              vy: (Math.random() - 0.5) * 10,
+              vz: (Math.random() - 0.5) * 10,
+              life: 1.0,
+              color: Math.floor(Math.random() * 0xffffff),
+            };
 
         newParticles.push(particle);
       }
@@ -275,7 +277,7 @@ export class QSIMDParticles {
     return {
       ...this.metrics,
       particleCount: this.particles.length,
-      maxParticles: this.config.maxParticles
+      maxParticles: this.config.maxParticles,
     };
   }
 }
@@ -287,15 +289,15 @@ export class QSIMDParticles {
  * @gain 3.2x
  */
 export class QSIMDNetwork {
-  static VERSION = '1.4.5-simd.3';
-  static COMPONENT_TYPE = 'NetworkNode';
-  static FEATURES = ['SIMD_SEARCH', 'FAST_NODE_LINUX'];
-  static SIMD_BUFFER = 'SIMD_ACCEL';
-  static NODE_LOAD = 'NODE_FASTER';
-  static IPC_SPEED = 'LOW_LATENCY';
-  static SPAWN_SYNC = 'ARM64_OPTIMIZED';
-  static GAIN = '3.2x';
-  static TAG = 'simd-rc';
+  static VERSION = "1.4.5-simd.3";
+  static COMPONENT_TYPE = "NetworkNode";
+  static FEATURES = ["SIMD_SEARCH", "FAST_NODE_LINUX"];
+  static SIMD_BUFFER = "SIMD_ACCEL";
+  static NODE_LOAD = "NODE_FASTER";
+  static IPC_SPEED = "LOW_LATENCY";
+  static SPAWN_SYNC = "ARM64_OPTIMIZED";
+  static GAIN = "3.2x";
+  static TAG = "simd-rc";
 
   constructor(options = {}) {
     this.id = `qsimd-network-${Date.now()}`;
@@ -303,14 +305,14 @@ export class QSIMDNetwork {
     this.connections = new Map();
     this.messageBuffer = Buffer.alloc(options.bufferSize || 1024 * 1024); // 1MB
     this.messageOffset = 0;
-    this.arm64Optimized = process.arch === 'arm64';
+    this.arm64Optimized = process.arch === "arm64";
 
     this.config = {
       maxNodes: options.maxNodes || 1000,
       maxConnections: options.maxConnections || 10000,
       messageBufferSize: options.bufferSize || 1024 * 1024,
       lowLatencyMode: options.lowLatencyMode ?? true,
-      ...options
+      ...options,
     };
 
     this.metrics = {
@@ -318,7 +320,7 @@ export class QSIMDNetwork {
       connectionCount: 0,
       messagesProcessed: 0,
       avgLatency: 0,
-      searchOps: 0
+      searchOps: 0,
     };
   }
 
@@ -331,8 +333,8 @@ export class QSIMDNetwork {
       id,
       data: nodeData,
       connections: new Set(),
-      buffer: Buffer.from(JSON.stringify(nodeData), 'utf8'),
-      created: Date.now()
+      buffer: Buffer.from(JSON.stringify(nodeData), "utf8"),
+      created: Date.now(),
     };
 
     this.nodes.set(id, node);
@@ -357,7 +359,7 @@ export class QSIMDNetwork {
       source: sourceId,
       target: targetId,
       weight,
-      latency: 0
+      latency: 0,
     });
 
     this.metrics.connectionCount++;
@@ -369,7 +371,7 @@ export class QSIMDNetwork {
    */
   searchNodes(pattern) {
     const start = performance.now();
-    const patternBuffer = Buffer.from(pattern, 'utf8');
+    const patternBuffer = Buffer.from(pattern, "utf8");
     const results = [];
 
     for (const [id, node] of this.nodes) {
@@ -391,12 +393,15 @@ export class QSIMDNetwork {
   async sendMessage(sourceId, targetId, message) {
     const start = performance.now();
 
-    const msgBuffer = Buffer.from(JSON.stringify({
-      source: sourceId,
-      target: targetId,
-      payload: message,
-      timestamp: Date.now()
-    }), 'utf8');
+    const msgBuffer = Buffer.from(
+      JSON.stringify({
+        source: sourceId,
+        target: targetId,
+        payload: message,
+        timestamp: Date.now(),
+      }),
+      "utf8",
+    );
 
     // Write to message buffer
     if (this.messageOffset + msgBuffer.length > this.messageBuffer.length) {
@@ -409,7 +414,8 @@ export class QSIMDNetwork {
     const latency = performance.now() - start;
     this.metrics.messagesProcessed++;
     this.metrics.avgLatency =
-      (this.metrics.avgLatency * (this.metrics.messagesProcessed - 1) + latency) /
+      (this.metrics.avgLatency * (this.metrics.messagesProcessed - 1) +
+        latency) /
       this.metrics.messagesProcessed;
 
     return { latency, buffered: true };
@@ -435,7 +441,7 @@ export class QSIMDNetwork {
     return {
       ...this.metrics,
       arm64Optimized: this.arm64Optimized,
-      bufferUsage: this.messageOffset
+      bufferUsage: this.messageOffset,
     };
   }
 }
@@ -447,15 +453,15 @@ export class QSIMDNetwork {
  * @gain 4.7x
  */
 export class QSIMDData {
-  static VERSION = '1.4.5-simd.4';
-  static COMPONENT_TYPE = 'DataStream';
-  static FEATURES = ['BUFFER_INDEXOF_2X', 'IPC_BATCH'];
-  static SIMD_BUFFER = 'SIMD_MULTI';
-  static NODE_LOAD = 'NATIVE_SPEED';
-  static IPC_SPEED = 'BATCH_IPC';
-  static SPAWN_SYNC = 'FD_OPTIMIZED';
-  static GAIN = '4.7x';
-  static TAG = 'simd-stable';
+  static VERSION = "1.4.5-simd.4";
+  static COMPONENT_TYPE = "DataStream";
+  static FEATURES = ["BUFFER_INDEXOF_2X", "IPC_BATCH"];
+  static SIMD_BUFFER = "SIMD_MULTI";
+  static NODE_LOAD = "NATIVE_SPEED";
+  static IPC_SPEED = "BATCH_IPC";
+  static SPAWN_SYNC = "FD_OPTIMIZED";
+  static GAIN = "4.7x";
+  static TAG = "simd-stable";
 
   constructor(options = {}) {
     this.id = `qsimd-data-${Date.now()}`;
@@ -463,13 +469,13 @@ export class QSIMDData {
     this.subscribers = new Map();
     this.batchBuffer = Buffer.alloc(options.batchBufferSize || 256 * 1024); // 256KB
     this.batchOffset = 0;
-    this.fdOptimized = process.platform === 'linux';
+    this.fdOptimized = process.platform === "linux";
 
     this.config = {
       maxStreams: options.maxStreams || 100,
       batchSize: options.batchSize || 100,
       flushInterval: options.flushInterval || 100,
-      ...options
+      ...options,
     };
 
     this.metrics = {
@@ -477,7 +483,7 @@ export class QSIMDData {
       dataPointsProcessed: 0,
       batchesFlushed: 0,
       avgProcessTime: 0,
-      indexOfOps: 0
+      indexOfOps: 0,
     };
   }
 
@@ -491,14 +497,14 @@ export class QSIMDData {
       id,
       config: {
         interval: config.interval || 1000,
-        transform: config.transform || (d => d),
-        ...config
+        transform: config.transform || ((d) => d),
+        ...config,
       },
       data: [],
       buffer: Buffer.alloc(64 * 1024), // 64KB per stream
       offset: 0,
       subscribers: new Set(),
-      active: false
+      active: false,
     };
 
     this.streams.set(id, stream);
@@ -517,10 +523,13 @@ export class QSIMDData {
     const start = performance.now();
 
     // Serialize and buffer
-    const serialized = Buffer.from(JSON.stringify({
-      ...data,
-      timestamp: Date.now()
-    }), 'utf8');
+    const serialized = Buffer.from(
+      JSON.stringify({
+        ...data,
+        timestamp: Date.now(),
+      }),
+      "utf8",
+    );
 
     // Write to stream buffer
     if (stream.offset + serialized.length > stream.buffer.length) {
@@ -539,7 +548,8 @@ export class QSIMDData {
     const processTime = performance.now() - start;
     this.metrics.dataPointsProcessed++;
     this.metrics.avgProcessTime =
-      (this.metrics.avgProcessTime * (this.metrics.dataPointsProcessed - 1) + processTime) /
+      (this.metrics.avgProcessTime * (this.metrics.dataPointsProcessed - 1) +
+        processTime) /
       this.metrics.dataPointsProcessed;
 
     // Notify subscribers
@@ -547,7 +557,7 @@ export class QSIMDData {
       try {
         callback(data, stream.id);
       } catch (e) {
-        console.error('Subscriber error:', e);
+        console.error("Subscriber error:", e);
       }
     }
 
@@ -562,7 +572,7 @@ export class QSIMDData {
     if (!stream) return { results: [], searchTime: 0 };
 
     const start = performance.now();
-    const patternBuffer = Buffer.from(pattern, 'utf8');
+    const patternBuffer = Buffer.from(pattern, "utf8");
     const results = [];
 
     // Search in buffer (SIMD-accelerated)
@@ -612,7 +622,7 @@ export class QSIMDData {
     return {
       ...this.metrics,
       activeStreams: this.streams.size,
-      fdOptimized: this.fdOptimized
+      fdOptimized: this.fdOptimized,
     };
   }
 }
@@ -632,7 +642,7 @@ export const SIMDComponents = {
   getComponentInfo() {
     return [
       {
-        id: 'qsimd-scene@1.4.5-simd.1',
+        id: "qsimd-scene@1.4.5-simd.1",
         type: QSIMDScene.COMPONENT_TYPE,
         features: QSIMDScene.FEATURES,
         simdBuffer: QSIMDScene.SIMD_BUFFER,
@@ -640,10 +650,10 @@ export const SIMDComponents = {
         ipcSpeed: QSIMDScene.IPC_SPEED,
         spawnSync: QSIMDScene.SPAWN_SYNC,
         gain: QSIMDScene.GAIN,
-        tag: QSIMDScene.TAG
+        tag: QSIMDScene.TAG,
       },
       {
-        id: 'qsimd-particles@1.4.5-simd.2',
+        id: "qsimd-particles@1.4.5-simd.2",
         type: QSIMDParticles.COMPONENT_TYPE,
         features: QSIMDParticles.FEATURES,
         simdBuffer: QSIMDParticles.SIMD_BUFFER,
@@ -651,10 +661,10 @@ export const SIMDComponents = {
         ipcSpeed: QSIMDParticles.IPC_SPEED,
         spawnSync: QSIMDParticles.SPAWN_SYNC,
         gain: QSIMDParticles.GAIN,
-        tag: QSIMDParticles.TAG
+        tag: QSIMDParticles.TAG,
       },
       {
-        id: 'qsimd-network@1.4.5-simd.3',
+        id: "qsimd-network@1.4.5-simd.3",
         type: QSIMDNetwork.COMPONENT_TYPE,
         features: QSIMDNetwork.FEATURES,
         simdBuffer: QSIMDNetwork.SIMD_BUFFER,
@@ -662,10 +672,10 @@ export const SIMDComponents = {
         ipcSpeed: QSIMDNetwork.IPC_SPEED,
         spawnSync: QSIMDNetwork.SPAWN_SYNC,
         gain: QSIMDNetwork.GAIN,
-        tag: QSIMDNetwork.TAG
+        tag: QSIMDNetwork.TAG,
       },
       {
-        id: 'qsimd-data@1.4.5-simd.4',
+        id: "qsimd-data@1.4.5-simd.4",
         type: QSIMDData.COMPONENT_TYPE,
         features: QSIMDData.FEATURES,
         simdBuffer: QSIMDData.SIMD_BUFFER,
@@ -673,10 +683,10 @@ export const SIMDComponents = {
         ipcSpeed: QSIMDData.IPC_SPEED,
         spawnSync: QSIMDData.SPAWN_SYNC,
         gain: QSIMDData.GAIN,
-        tag: QSIMDData.TAG
-      }
+        tag: QSIMDData.TAG,
+      },
     ];
-  }
+  },
 };
 
 export default SIMDComponents;

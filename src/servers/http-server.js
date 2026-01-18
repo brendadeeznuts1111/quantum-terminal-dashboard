@@ -3,7 +3,7 @@
  * Serves the React dashboard with hot reload support
  */
 
-import { startTerminalServer } from './terminal-server.js';
+import { startTerminalServer } from "./terminal-server.js";
 
 const HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="en">
@@ -391,49 +391,51 @@ function startHttpServer(port = 3000) {
       const url = new URL(req.url);
 
       // Serve main dashboard
-      if (url.pathname === '/' || url.pathname === '/index.html') {
+      if (url.pathname === "/" || url.pathname === "/index.html") {
         return new Response(HTML_TEMPLATE, {
-          headers: { 'Content-Type': 'text/html' }
+          headers: { "Content-Type": "text/html" },
         });
       }
 
       // Health check
-      if (url.pathname === '/health') {
+      if (url.pathname === "/health") {
         return Response.json({
-          status: 'ok',
-          server: 'http',
-          uptime: process.uptime()
+          status: "ok",
+          server: "http",
+          uptime: process.uptime(),
         });
       }
 
       // API: Server info
-      if (url.pathname === '/api/info') {
+      if (url.pathname === "/api/info") {
         return Response.json({
-          name: 'Quantum Financial Dashboard',
-          version: '1.4.0-pty.alpha.1',
-          features: ['TERMINAL', 'WEBGL', 'PREMIUM'],
+          name: "Quantum Financial Dashboard",
+          version: "1.4.0-pty.alpha.1",
+          features: ["TERMINAL", "WEBGL", "PREMIUM"],
           endpoints: {
-            dashboard: 'http://localhost:3000',
-            terminal: 'ws://localhost:3001/terminal',
-            health: 'http://localhost:3000/health'
-          }
+            dashboard: "http://localhost:3000",
+            terminal: "ws://localhost:3001/terminal",
+            health: "http://localhost:3000/health",
+          },
         });
       }
 
       // Static files from dist (if built)
-      if (url.pathname.startsWith('/dist/')) {
-        const filePath = '.' + url.pathname;
+      if (url.pathname.startsWith("/dist/")) {
+        const filePath = "." + url.pathname;
         const file = Bun.file(filePath);
         if (await file.exists()) {
           return new Response(file);
         }
       }
 
-      return new Response('Not Found', { status: 404 });
-    }
+      return new Response("Not Found", { status: 404 });
+    },
   });
 
-  console.log(`Quantum Dashboard HTTP Server running on http://localhost:${server.port}`);
+  console.log(
+    `Quantum Dashboard HTTP Server running on http://localhost:${server.port}`,
+  );
   return server;
 }
 
@@ -441,7 +443,7 @@ function startHttpServer(port = 3000) {
  * Start both servers
  */
 async function startServers(httpPort = 3000, wsPort = 3001) {
-  console.log('Starting Quantum Terminal Dashboard servers...\n');
+  console.log("Starting Quantum Terminal Dashboard servers...\n");
 
   // Start terminal WebSocket server
   const wsServer = startTerminalServer(wsPort);
@@ -449,17 +451,17 @@ async function startServers(httpPort = 3000, wsPort = 3001) {
   // Start HTTP server
   const httpServer = startHttpServer(httpPort);
 
-  console.log('\nDashboard ready:');
+  console.log("\nDashboard ready:");
   console.log(`  Open http://localhost:${httpPort} in your browser`);
-  console.log('\nPress Ctrl+C to stop\n');
+  console.log("\nPress Ctrl+C to stop\n");
 
   return { httpServer, wsServer };
 }
 
 // Start if run directly
 if (import.meta.main) {
-  const httpPort = parseInt(process.env.HTTP_PORT || '3000');
-  const wsPort = parseInt(process.env.WS_PORT || '3001');
+  const httpPort = parseInt(process.env.HTTP_PORT || "3000");
+  const wsPort = parseInt(process.env.WS_PORT || "3001");
   startServers(httpPort, wsPort);
 }
 

@@ -1,0 +1,303 @@
+# Complete Environment Configuration
+# Demonstrates staging and production patterns (Bun-compatible version)
+
+# Development environment
+development:
+  server:
+    host: localhost
+    port: 3000
+    timeout: 5000
+    retries: 3
+  database:
+    host: localhost
+    port: 5432
+    name: quantum_lattice_dev
+  cache:
+    enabled: true
+    ttl: 3600
+    provider: redis
+  api:
+    url: http://localhost:4000
+    key: dev_key_12345
+    version: "v1"
+    timeout: 5000
+    retries: 3
+  logging:
+    level: debug
+    pretty: true
+    format: pretty
+    colors: true
+  security:
+    jwt_secret: dev_jwt_secret
+    session_timeout: 86400
+    cors_enabled: true
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: true
+    predictive_analytics: true
+  performance:
+    simd_enabled: true
+    worker_threads: 4
+    memory_limit: "512MB"
+  quantum:
+    tension_threshold: 0.7
+    decay_rate: 0.02
+    health_check_interval: 30000
+    simulation_mode: true
+    debug_visualization: true
+
+# Staging environment
+staging:
+  server:
+    host: staging.quantum-lattice.com
+    port: 443
+    timeout: 5000
+    retries: 3
+  database:
+    host: ${STAGING_DB_HOST}
+    port: ${STAGING_DB_PORT:-5432}
+    name: quantum_lattice_staging
+    username: ${STAGING_DB_USER}
+    password: ${STAGING_DB_PASS}
+  cache:
+    enabled: true
+    ttl: 1800
+    provider: redis-cluster
+    host: ${STAGING_REDIS_HOST}
+    port: ${STAGING_REDIS_PORT:-6379}
+  api:
+    url: https://staging-api.quantum-lattice.com
+    key: ${STAGING_API_KEY}
+    version: "v1"
+    timeout: 5000
+    retries: 3
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+      - /api/v1/analytics
+      - /api/v1/experiments
+  logging:
+    level: info
+    pretty: false
+    format: json
+    colors: false
+  security:
+    jwt_secret: ${STAGING_JWT_SECRET}
+    encryption_key: ${STAGING_ENCRYPTION_KEY}
+    session_timeout: 86400
+    cors_enabled: true
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 1000
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: false
+    predictive_analytics: true
+    a_b_testing: true
+    advanced_logging: true
+  performance:
+    simd_enabled: true
+    worker_threads: 6
+    memory_limit: "1GB"
+    monitoring:
+      enabled: true
+      metrics_interval: 30000
+  quantum:
+    tension_threshold: 0.7
+    decay_rate: 0.02
+    health_check_interval: 30000
+    simulation_mode: false
+    analytics_enabled: true
+    debug_mode: false
+  notifications:
+    slack:
+      webhook_url: ${STAGING_SLACK_WEBHOOK}
+      channel: "#staging-alerts"
+    email:
+      smtp_host: ${STAGING_SMTP_HOST}
+      smtp_port: ${STAGING_SMTP_PORT:-587}
+      from: "staging@quantum-lattice.com"
+  external_services:
+    analytics:
+      provider: ${STAGING_ANALYTICS_PROVIDER:-mixpanel}
+      api_key: ${STAGING_ANALYTICS_KEY}
+    cdn:
+      provider: ${STAGING_CDN_PROVIDER:-cloudflare}
+      domain: staging.quantum-lattice.com
+    monitoring:
+      provider: ${STAGING_MONITORING_PROVIDER:-datadog}
+      api_key: ${STAGING_MONITORING_KEY}
+
+# Production environment
+production:
+  server:
+    host: api.quantum-lattice.com
+    port: 443
+    timeout: 10000
+    retries: 3
+  database:
+    host: ${PROD_DB_HOST}
+    port: ${PROD_DB_PORT:-5432}
+    name: quantum_lattice_prod
+    username: ${PROD_DB_USER}
+    password: ${PROD_DB_PASS}
+    pool_size: 20
+    ssl: ${PROD_DB_SSL:-true}
+  cache:
+    enabled: true
+    ttl: 86400
+    provider: redis-cluster
+    host: ${PROD_REDIS_HOST}
+    port: ${PROD_REDIS_PORT:-6379}
+    password: ${PROD_REDIS_PASS}
+    cluster: true
+  api:
+    url: https://api.quantum-lattice.com
+    key: ${PROD_API_KEY}
+    version: "v1"
+    timeout: 5000
+    retries: 3
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+      - /api/v1/analytics
+      - /api/v1/predictions
+      - /api/v1/status
+  logging:
+    level: error
+    pretty: false
+    format: json
+    colors: false
+    structured: true
+  security:
+    jwt_secret: ${PROD_JWT_SECRET}
+    encryption_key: ${PROD_ENCRYPTION_KEY}
+    session_timeout: 3600
+    cors_enabled: true
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 5000
+      burst_limit: 10000
+    ddos_protection: true
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: false
+    predictive_analytics: false
+    a_b_testing: false
+    advanced_logging: false
+  performance:
+    simd_enabled: true
+    worker_threads: 8
+    memory_limit: "2GB"
+    monitoring:
+      enabled: true
+      metrics_interval: 15000
+      profiling: true
+    optimization:
+      compression: true
+      caching: aggressive
+    scaling:
+      auto_scaling: true
+      min_instances: 3
+      max_instances: 20
+  quantum:
+    tension_threshold: 0.8
+    decay_rate: 0.01
+    health_check_interval: 15000
+    simulation_mode: false
+    high_availability: true
+    disaster_recovery: true
+    analytics_enabled: true
+    debug_mode: false
+    monitoring:
+      real_time: true
+      historical: true
+      alerting: true
+  notifications:
+    slack:
+      webhook_url: ${PROD_SLACK_WEBHOOK}
+      channel: "#production-alerts"
+      escalation_policy: true
+    email:
+      smtp_host: ${PROD_SMTP_HOST}
+      smtp_port: ${PROD_SMTP_PORT:-587}
+      from: "alerts@quantum-lattice.com"
+    pagerduty:
+      integration_key: ${PROD_PAGERDUTY_KEY}
+      severity: high
+  external_services:
+    analytics:
+      provider: ${PROD_ANALYTICS_PROVIDER:-datadog}
+      api_key: ${PROD_ANALYTICS_KEY}
+      sampling_rate: 0.1
+    cdn:
+      provider: ${PROD_CDN_PROVIDER:-cloudflare}
+      domain: quantum-lattice.com
+      caching: aggressive
+    monitoring:
+      provider: ${PROD_MONITORING_PROVIDER:-datadog}
+      api_key: ${PROD_MONITORING_KEY}
+      apm: true
+      logs: true
+    backup:
+      provider: ${PROD_BACKUP_PROVIDER:-aws}
+      retention_days: 90
+      encryption: true
+    security:
+      provider: ${PROD_SECURITY_PROVIDER:-cloudflare}
+      waf: true
+      ddos_protection: true
+
+# Testing environment
+testing:
+  server:
+    host: localhost
+    port: 3001
+    timeout: 5000
+    retries: 3
+  database:
+    host: localhost
+    port: 5432
+    name: quantum_lattice_test
+    pool_size: 5
+  cache:
+    enabled: false
+    ttl: 300
+    provider: redis
+  api:
+    url: http://localhost:4001
+    key: test_key_12345
+    version: "v1"
+    timeout: 5000
+    retries: 3
+  logging:
+    level: silent
+    pretty: false
+    format: json
+    colors: false
+  security:
+    jwt_secret: test_jwt_secret
+    session_timeout: 3600
+    cors_enabled: true
+  features:
+    quantum_terminal: true
+    real_time_monitoring: false
+    experimental_api: true
+    predictive_analytics: true
+    a_b_testing: true
+  performance:
+    simd_enabled: true
+    worker_threads: 2
+    memory_limit: "256MB"
+  quantum:
+    tension_threshold: 0.7
+    decay_rate: 0.02
+    health_check_interval: 30000
+    simulation_mode: true
+    mock_mode: true
+    fast_simulation: true

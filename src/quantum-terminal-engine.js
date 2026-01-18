@@ -3,18 +3,18 @@
  * Core engine for managing terminals, PTY processes, and feature flags
  */
 
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 
 // Feature flag helper (works both at compile-time and runtime)
 const hasFeature = (name) => {
   try {
     // Try compile-time feature check
-    if (typeof globalThis.feature === 'function') {
+    if (typeof globalThis.feature === "function") {
       return globalThis.feature(name);
     }
     // Fallback to environment variable
-    return process.env[`FEATURE_${name}`] === 'true';
+    return process.env[`FEATURE_${name}`] === "true";
   } catch {
     return true; // Default enabled if not in bundled context
   }
@@ -31,20 +31,22 @@ class QuantumTerminalEngine {
 
   // INITIALIZE WITH FEATURE FLAGS
   initializeTerminalFeatures() {
-    if (!hasFeature('TERMINAL')) {
-      console.warn('Terminal features disabled at compile time');
+    if (!hasFeature("TERMINAL")) {
+      console.warn("Terminal features disabled at compile time");
       return;
     }
 
-    console.log('Enabling PTY Terminal Features...');
+    console.log("Enabling PTY Terminal Features...");
 
     // Check platform
-    if (process.platform === 'win32') {
-      console.warn('PTY support is limited on Windows. Please file an issue for full support.');
+    if (process.platform === "win32") {
+      console.warn(
+        "PTY support is limited on Windows. Please file an issue for full support.",
+      );
     }
 
     // Initialize event types
-    ['data', 'resize', 'exit', 'error', 'financial:data'].forEach(type => {
+    ["data", "resize", "exit", "error", "financial:data"].forEach((type) => {
       this.eventListeners.set(type, new Set());
     });
   }
@@ -67,7 +69,7 @@ class QuantumTerminalEngine {
   emit(event, data) {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
-      listeners.forEach(cb => {
+      listeners.forEach((cb) => {
         try {
           cb(data);
         } catch (err) {
@@ -79,20 +81,20 @@ class QuantumTerminalEngine {
 
   // CREATE INTERACTIVE FINANCIAL TERMINAL
   async createFinancialTerminal(options = {}) {
-    if (!hasFeature('TERMINAL')) {
-      throw new Error('Terminal features not enabled in this build');
+    if (!hasFeature("TERMINAL")) {
+      throw new Error("Terminal features not enabled in this build");
     }
 
     const {
       cols = 80,
       rows = 24,
-      command = 'bash',
-      args = ['-i'],
+      command = "bash",
+      args = ["-i"],
       cwd = process.cwd(),
-      env = { ...process.env, TERM: 'xterm-256color' }
+      env = { ...process.env, TERM: "xterm-256color" },
     } = options;
 
-    console.log(`Creating financial terminal: ${command} ${args.join(' ')}`);
+    console.log(`Creating financial terminal: ${command} ${args.join(" ")}`);
 
     const termId = `term_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     this.terminalOutputs.set(termId, []);
@@ -114,15 +116,15 @@ class QuantumTerminalEngine {
         }
 
         // Emit terminal data event
-        this.emit('data', {
+        this.emit("data", {
           terminalId: termId,
           data: output,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
 
         // Handle terminal output
         this.handleTerminalOutput(term, data);
-      }
+      },
     });
 
     // Spawn interactive shell with PTY
@@ -133,15 +135,15 @@ class QuantumTerminalEngine {
       env,
       onExit: (proc, exitCode, signalCode, error) => {
         console.log(`Terminal exited with code ${exitCode}`);
-        this.emit('exit', {
+        this.emit("exit", {
           terminalId: termId,
           exitCode,
           signalCode,
           error,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         this.handleTerminalExit(terminal, exitCode);
-      }
+      },
     });
 
     // Store references
@@ -162,7 +164,7 @@ class QuantumTerminalEngine {
         this.terminals.delete(termId);
         this.ptyProcesses.delete(proc.pid);
         this.terminalOutputs.delete(termId);
-      }
+      },
     };
   }
 
@@ -176,10 +178,10 @@ class QuantumTerminalEngine {
     // Find terminal ID
     for (const [id, entry] of this.terminals) {
       if (entry.terminal === terminal) {
-        this.emit('data', {
+        this.emit("data", {
           terminalId: id,
           data: data.toString(),
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
       }
@@ -190,11 +192,11 @@ class QuantumTerminalEngine {
   emitTerminalResize(terminal, cols, rows) {
     for (const [id, entry] of this.terminals) {
       if (entry.terminal === terminal) {
-        this.emit('resize', {
+        this.emit("resize", {
           terminalId: id,
           cols,
           rows,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
       }
@@ -209,27 +211,27 @@ class QuantumTerminalEngine {
   // RUN FINANCIAL VISUALIZATION IN TERMINAL
   async runFinancialVisualization(visualization, options = {}) {
     const {
-      type = 'ticker',
-      symbols = ['AAPL', 'GOOGL', 'TSLA', 'MSFT'],
-      interval = '1s',
+      type = "ticker",
+      symbols = ["AAPL", "GOOGL", "TSLA", "MSFT"],
+      interval = "1s",
       terminalCols = 120,
-      terminalRows = 40
+      terminalRows = 40,
     } = options;
 
-    const scriptPath = join(import.meta.dir, 'scripts', `${visualization}.js`);
+    const scriptPath = join(import.meta.dir, "scripts", `${visualization}.js`);
 
     // Create terminal for financial visualization
     const term = await this.createFinancialTerminal({
       cols: terminalCols,
       rows: terminalRows,
-      command: 'bun',
-      args: ['run', scriptPath],
+      command: "bun",
+      args: ["run", scriptPath],
       env: {
         ...process.env,
-        FINANCIAL_SYMBOLS: symbols.join(','),
+        FINANCIAL_SYMBOLS: symbols.join(","),
         UPDATE_INTERVAL: interval,
-        VISUALIZATION_TYPE: type
-      }
+        VISUALIZATION_TYPE: type,
+      },
     });
 
     return term;
@@ -290,7 +292,7 @@ class QuantumTerminalEngine {
           console.log('\\n' + '-'.repeat(100));
           console.log('F1: Refresh  F2: Add Symbol  F3: Kill Process  F10: Quit');
         }, 2000);
-      `
+      `,
     };
 
     return scripts[visualization] || scripts.ticker;
@@ -300,7 +302,7 @@ class QuantumTerminalEngine {
   parseFinancialOutput(output, type) {
     try {
       // Try to parse structured data
-      const lines = output.split('\n').filter(l => l.trim());
+      const lines = output.split("\n").filter((l) => l.trim());
 
       // Look for price patterns
       const pricePattern = /(\w+)\s*:\s*\$?([\d.]+)\s*([+-]?[\d.]+)/;
@@ -312,7 +314,7 @@ class QuantumTerminalEngine {
           data.push({
             symbol: match[1],
             price: parseFloat(match[2]),
-            change: parseFloat(match[3])
+            change: parseFloat(match[3]),
           });
         }
       }
@@ -325,7 +327,7 @@ class QuantumTerminalEngine {
 
   // WEBSOCKET TERMINAL SERVER
   startWebSocketTerminalServer(port = 3001) {
-    if (!hasFeature('TERMINAL')) return null;
+    if (!hasFeature("TERMINAL")) return null;
 
     const engine = this;
 
@@ -335,56 +337,61 @@ class QuantumTerminalEngine {
         const url = new URL(req.url);
 
         // Handle WebSocket upgrade for terminal connections
-        if (url.pathname === '/terminal') {
+        if (url.pathname === "/terminal") {
           const success = server.upgrade(req, {
             data: {
               terminal: null,
-              createdAt: Date.now()
-            }
+              createdAt: Date.now(),
+            },
           });
 
           if (success) return undefined;
         }
 
         // Health check
-        if (url.pathname === '/health') {
+        if (url.pathname === "/health") {
           return Response.json({
-            status: 'ok',
+            status: "ok",
             terminals: engine.terminals.size,
-            uptime: process.uptime()
+            uptime: process.uptime(),
           });
         }
 
-        return new Response('Quantum Terminal Server');
+        return new Response("Quantum Terminal Server");
       },
       websocket: {
         async open(ws) {
-          console.log('WebSocket terminal connection opened');
+          console.log("WebSocket terminal connection opened");
 
           // Create terminal for this WebSocket connection
           const term = await engine.createFinancialTerminal({
             cols: 80,
             rows: 24,
-            command: 'bash',
-            args: ['-i']
+            command: "bash",
+            args: ["-i"],
           });
 
           ws.data.terminal = term;
 
           // Forward terminal output to WebSocket
-          engine.on('data', (event) => {
-            if (event.terminalId === term.id && ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({
-                type: 'terminal_data',
-                data: event.data,
-                timestamp: event.timestamp
-              }));
+          engine.on("data", (event) => {
+            if (
+              event.terminalId === term.id &&
+              ws.readyState === WebSocket.OPEN
+            ) {
+              ws.send(
+                JSON.stringify({
+                  type: "terminal_data",
+                  data: event.data,
+                  timestamp: event.timestamp,
+                }),
+              );
             }
           });
 
           // Send initial greeting
           term.terminal.write('echo "Welcome to Quantum Financial Terminal"\n');
-          term.terminal.write('echo "Type \'help\' for available commands"\n');
+          term.terminal.write("echo \"Type 'help' for available commands\"\n");
         },
 
         async message(ws, message) {
@@ -395,20 +402,20 @@ class QuantumTerminalEngine {
             const data = JSON.parse(message.toString());
 
             switch (data.type) {
-              case 'terminal_input':
+              case "terminal_input":
                 term.terminal.write(data.data);
                 break;
 
-              case 'terminal_resize':
+              case "terminal_resize":
                 term.terminal.resize(data.cols, data.rows);
                 break;
 
-              case 'terminal_command':
+              case "terminal_command":
                 const cmd = data.command;
-                if (cmd.startsWith('quantum.')) {
+                if (cmd.startsWith("quantum.")) {
                   await engine.handleQuantumCommand(term, cmd);
                 } else {
-                  term.terminal.write(cmd + '\n');
+                  term.terminal.write(cmd + "\n");
                 }
                 break;
             }
@@ -419,49 +426,55 @@ class QuantumTerminalEngine {
         },
 
         close(ws) {
-          console.log('WebSocket terminal connection closed');
+          console.log("WebSocket terminal connection closed");
           const term = ws.data.terminal;
           if (term) {
             term.close().catch(console.error);
           }
-        }
-      }
+        },
+      },
     });
 
-    console.log(`Terminal WebSocket server running on ws://localhost:${server.port}/terminal`);
+    console.log(
+      `Terminal WebSocket server running on ws://localhost:${server.port}/terminal`,
+    );
     return server;
   }
 
   // HANDLE QUANTUM COMMANDS
   async handleQuantumCommand(term, command) {
-    const parts = command.split('.');
+    const parts = command.split(".");
     const cmd = parts[1];
 
     switch (cmd) {
-      case 'ticker':
+      case "ticker":
         term.terminal.write('echo "Starting Quantum Ticker..."\n');
-        term.terminal.write(`bun run ${join(import.meta.dir, 'scripts/financial-ticker.js')}\n`);
+        term.terminal.write(
+          `bun run ${join(import.meta.dir, "scripts/financial-ticker.js")}\n`,
+        );
         break;
 
-      case 'monitor':
+      case "monitor":
         term.terminal.write('echo "Starting Market Monitor..."\n');
-        term.terminal.write(`bun run ${join(import.meta.dir, 'scripts/market-monitor.js')}\n`);
+        term.terminal.write(
+          `bun run ${join(import.meta.dir, "scripts/market-monitor.js")}\n`,
+        );
         break;
 
-      case 'status':
+      case "status":
         const stats = {
           activeTerminals: this.terminals.size,
           uptime: process.uptime(),
-          memory: process.memoryUsage()
+          memory: process.memoryUsage(),
         };
         term.terminal.write(`echo '${JSON.stringify(stats, null, 2)}'\n`);
         break;
 
-      case 'clear':
-        term.terminal.write('clear\n');
+      case "clear":
+        term.terminal.write("clear\n");
         break;
 
-      case 'help':
+      case "help":
         const helpText = `
 Quantum Terminal Commands:
   quantum.ticker  - Start financial ticker
@@ -481,30 +494,30 @@ Quantum Terminal Commands:
   // COMPILE-TIME FEATURE FLAG INTEGRATION
   async buildWithFeatureFlags(options = {}) {
     const {
-      entrypoints = ['./src/quantum-app.ts'],
-      outdir = './dist',
-      features = ['TERMINAL', 'WEBGL', 'PREMIUM'],
-      terminalEnabled = true
+      entrypoints = ["./src/quantum-app.ts"],
+      outdir = "./dist",
+      features = ["TERMINAL", "WEBGL", "PREMIUM"],
+      terminalEnabled = true,
     } = options;
 
     // Feature flag validation
-    const validatedFeatures = features.filter(f => {
-      if (f === 'TERMINAL' && !terminalEnabled) return false;
+    const validatedFeatures = features.filter((f) => {
+      if (f === "TERMINAL" && !terminalEnabled) return false;
       return true;
     });
 
-    console.log(`Building with features: ${validatedFeatures.join(', ')}`);
+    console.log(`Building with features: ${validatedFeatures.join(", ")}`);
 
     const result = await Bun.build({
       entrypoints,
       outdir,
       define: {
-        'globalThis.QUANTUM_FEATURES': JSON.stringify(validatedFeatures),
-        'process.env.ENABLE_TERMINAL': JSON.stringify(terminalEnabled),
-        'process.env.BUILD_TIMESTAMP': JSON.stringify(Date.now())
+        "globalThis.QUANTUM_FEATURES": JSON.stringify(validatedFeatures),
+        "process.env.ENABLE_TERMINAL": JSON.stringify(terminalEnabled),
+        "process.env.BUILD_TIMESTAMP": JSON.stringify(Date.now()),
       },
       minify: true,
-      sourcemap: 'external'
+      sourcemap: "external",
     });
 
     // Generate feature report
@@ -518,21 +531,26 @@ Quantum Terminal Commands:
     const report = {
       timestamp: new Date().toISOString(),
       features,
-      outputs: result.outputs?.map(o => ({
-        path: o.path,
-        size: o.size,
-        kind: o.kind
-      })) || [],
-      success: result.success
+      outputs:
+        result.outputs?.map((o) => ({
+          path: o.path,
+          size: o.size,
+          kind: o.kind,
+        })) || [],
+      success: result.success,
     };
 
-    console.log('Feature Report:', JSON.stringify(report, null, 2));
+    // Use Bun.inspect with sorted properties for consistent output
+    console.log(
+      "Feature Report:",
+      Bun.inspect(report, { sorted: true, depth: 10 }),
+    );
     return report;
   }
 
   // FEATURE-SPECIFIC CODE GENERATION
   generateTerminalComponent() {
-    if (!hasFeature('TERMINAL')) {
+    if (!hasFeature("TERMINAL")) {
       return `
         // Terminal features disabled at compile time
         export const TerminalComponent = () => (
@@ -623,7 +641,7 @@ Quantum Terminal Commands:
       activeTerminals: this.terminals.size,
       activePTYs: this.ptyProcesses.size,
       uptime: process.uptime(),
-      memory: process.memoryUsage()
+      memory: process.memoryUsage(),
     };
   }
 
@@ -640,7 +658,7 @@ Quantum Terminal Commands:
           } catch (err) {
             console.error(`Error closing terminal ${id}:`, err);
           }
-        })()
+        })(),
       );
     }
     await Promise.all(closePromises);
@@ -659,8 +677,8 @@ if (import.meta.main) {
   const engine = new QuantumTerminalEngine();
   globalThis.QUANTUM_TERMINAL_ENGINE = engine;
 
-  if (args.includes('--terminal') || args.includes('--server')) {
-    console.log('Starting Quantum Terminal Dashboard...');
+  if (args.includes("--terminal") || args.includes("--server")) {
+    console.log("Starting Quantum Terminal Dashboard...");
 
     // Start WebSocket terminal server
     const wsServer = engine.startWebSocketTerminalServer(3001);
@@ -671,7 +689,7 @@ if (import.meta.main) {
       async fetch(req) {
         const url = new URL(req.url);
 
-        if (url.pathname === '/') {
+        if (url.pathname === "/") {
           const html = `
             <!DOCTYPE html>
             <html>
@@ -693,30 +711,32 @@ if (import.meta.main) {
             </body>
             </html>
           `;
-          return new Response(html, { headers: { 'Content-Type': 'text/html' } });
+          return new Response(html, {
+            headers: { "Content-Type": "text/html" },
+          });
         }
 
-        return new Response('Not found', { status: 404 });
-      }
+        return new Response("Not found", { status: 404 });
+      },
     });
 
     console.log(`Dashboard running on http://localhost:${httpServer.port}`);
-    console.log(`Terminal WebSocket: ws://localhost:${wsServer?.port}/terminal`);
-
-  } else if (args.includes('--run-pty')) {
-    console.log('Testing Bun.Terminal API...');
+    console.log(
+      `Terminal WebSocket: ws://localhost:${wsServer?.port}/terminal`,
+    );
+  } else if (args.includes("--run-pty")) {
+    console.log("Testing Bun.Terminal API...");
 
     const term = await engine.createFinancialTerminal({
       cols: 80,
       rows: 24,
-      command: 'bash',
-      args: ['-c', 'echo "Hello from PTY"; ls -la; echo "Done"']
+      command: "bash",
+      args: ["-c", 'echo "Hello from PTY"; ls -la; echo "Done"'],
     });
 
     await term.process.exited;
     await term.close();
-
-  } else if (args.includes('--help')) {
+  } else if (args.includes("--help")) {
     console.log(`
 Quantum Terminal Engine
 
@@ -729,7 +749,7 @@ Options:
   --help                 Show this help
 `);
   } else {
-    console.log('Use --terminal to start servers or --help for options');
+    console.log("Use --terminal to start servers or --help for options");
   }
 }
 

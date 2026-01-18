@@ -79,9 +79,9 @@ export const WebSocketTerminal = forwardRef<WebSocketTerminalHandle, WebSocketTe
   const initTerminal = useCallback(async () => {
     if (!terminalRef.current || terminalInstance.current) return;
 
-    const { Terminal } = await import('xterm');
-    const { FitAddon } = await import('xterm-addon-fit');
-    const { WebLinksAddon } = await import('xterm-addon-web-links');
+    const { Terminal } = await import('@xterm/xterm');
+    const { FitAddon } = await import('@xterm/addon-fit');
+    const { WebLinksAddon } = await import('@xterm/addon-web-links');
 
     terminalInstance.current = new Terminal({
       theme: defaultTheme,

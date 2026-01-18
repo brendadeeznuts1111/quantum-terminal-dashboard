@@ -75,8 +75,9 @@ export const FinancialTerminal: React.FC<FinancialTerminalProps> = ({
     if (!terminalRef.current || terminalInstance.current) return;
 
     // Dynamic import for xterm.js
-    const { Terminal } = await import('xterm');
-    const { FitAddon } = await import('xterm-addon-fit');
+    const { Terminal } = await import('@xterm/xterm');
+    const { FitAddon } = await import('@xterm/addon-fit');
+    const { WebLinksAddon } = await import('@xterm/addon-web-links');
 
     terminalInstance.current = new Terminal({
       theme: {

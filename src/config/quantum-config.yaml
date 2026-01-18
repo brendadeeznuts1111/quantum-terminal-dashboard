@@ -1,0 +1,199 @@
+# Quantum Cash Flow Lattice Configuration
+# Demonstrates YAML anchors, aliases, and environment variable interpolation
+
+defaults: &defaults
+  # Server configuration
+  server:
+    host: localhost
+    port: 3000
+    timeout: 5000
+    retries: 3
+    
+  # Database configuration
+  database:
+    host: localhost
+    port: 5432
+    pool_size: 10
+    
+  # Cache configuration
+  cache:
+    enabled: true
+    ttl: 3600
+    provider: redis
+    
+  # Security configuration
+  security:
+    session_timeout: 86400
+    cors_enabled: true
+    
+  # Performance configuration
+  performance:
+    simd_enabled: true
+    worker_threads: 4
+    memory_limit: "512MB"
+    
+  # Quantum system defaults
+  quantum:
+    tension_threshold: 0.7
+    decay_rate: 0.02
+    health_check_interval: 30000
+    
+  # API defaults
+  api:
+    version: "v1"
+    timeout: 5000
+    retries: 3
+
+development:
+  <<: *defaults
+  server:
+    <<: *defaults.server
+    host: localhost
+    port: 3000
+  database:
+    <<: *defaults.database
+    name: quantum_lattice_dev
+  api:
+    <<: *defaults.api
+    url: http://localhost:4000
+    key: dev_key_12345
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+  logging:
+    level: debug
+    format: pretty
+    colors: true
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: true
+  quantum:
+    <<: *defaults.quantum
+    simulation_mode: true
+    debug_visualization: true
+
+staging:
+  <<: *defaults
+  server:
+    <<: *defaults.server
+    host: staging.quantum-lattice.com
+    port: 443
+  database:
+    <<: *defaults.database
+    host: ${STAGING_DB_HOST}
+    name: quantum_lattice_staging
+    username: ${STAGING_DB_USER}
+    password: ${STAGING_DB_PASS}
+  api:
+    <<: *defaults.api
+    url: https://staging-api.quantum-lattice.com
+    key: ${STAGING_API_KEY}
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+      - /api/v1/analytics
+  security:
+    <<: *defaults.security
+    jwt_secret: ${STAGING_JWT_SECRET}
+    encryption_key: ${STAGING_ENCRYPTION_KEY}
+  logging:
+    level: info
+    format: json
+    colors: false
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: false
+    predictive_analytics: true
+  cache:
+    <<: *defaults.cache
+    ttl: 1800
+    provider: redis-cluster
+  quantum:
+    <<: *defaults.quantum
+    simulation_mode: false
+    analytics_enabled: true
+
+production:
+  <<: *defaults
+  server:
+    <<: *defaults.server
+    host: api.quantum-lattice.com
+    port: 443
+    timeout: 10000
+  database:
+    <<: *defaults.database
+    host: ${PROD_DB_HOST}
+    name: quantum_lattice_prod
+    username: ${PROD_DB_USER}
+    password: ${PROD_DB_PASS}
+    pool_size: 20
+  api:
+    <<: *defaults.api
+    url: https://api.quantum-lattice.com
+    key: ${PROD_API_KEY}
+    endpoints:
+      - /api/v1/metrics
+      - /api/v1/health
+      - /api/v1/tension
+      - /api/v1/analytics
+      - /api/v1/predictions
+  security:
+    <<: *defaults.security
+    jwt_secret: ${PROD_JWT_SECRET}
+    encryption_key: ${PROD_ENCRYPTION_KEY}
+    session_timeout: 3600
+  logging:
+    level: error
+    format: json
+    colors: false
+  features:
+    quantum_terminal: true
+    real_time_monitoring: true
+    experimental_api: false
+    predictive_analytics: false
+  cache:
+    <<: *defaults.cache
+    ttl: 86400
+    provider: redis-cluster
+  performance:
+    <<: *defaults.performance
+    worker_threads: 8
+    memory_limit: "2GB"
+  quantum:
+    <<: *defaults.quantum
+    high_availability: true
+    disaster_recovery: true
+
+testing:
+  <<: *defaults
+  server:
+    <<: *defaults.server
+    host: localhost
+    port: 3001
+  database:
+    <<: *defaults.database
+    name: quantum_lattice_test
+    pool_size: 5
+  api:
+    <<: *defaults.api
+    url: http://localhost:4001
+    key: test_key_12345
+  logging:
+    level: silent
+    format: json
+  features:
+    quantum_terminal: true
+    real_time_monitoring: false
+    experimental_api: true
+    predictive_analytics: true
+  cache:
+    <<: *defaults.cache
+    enabled: false
+  quantum:
+    <<: *defaults.quantum
+    mock_mode: true
+    fast_simulation: true

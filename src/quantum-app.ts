@@ -28,7 +28,7 @@ const CONFIG = {
   PTY_SUPPORT: hasFeature('PTY_SUPPORT'),
 
   // Server configuration
-  HTTP_PORT: parseInt(process.env.HTTP_PORT || '3000'),
+  HTTP_PORT: parseInt(process.env.HTTP_PORT || '4444'),
   WS_PORT: parseInt(process.env.WS_PORT || '3001'),
   WEBSOCKET_URL: process.env.WEBSOCKET_URL || 'ws://localhost:3001/terminal',
 
@@ -160,7 +160,7 @@ Options:
   --build          Build all profiles
 
 Environment Variables:
-  HTTP_PORT        HTTP server port (default: 3000)
+  HTTP_PORT        HTTP server port (default: 4444)
   WS_PORT          WebSocket server port (default: 3001)
   WEBSOCKET_URL    WebSocket URL for client (default: ws://localhost:3001/terminal)
 

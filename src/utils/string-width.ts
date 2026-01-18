@@ -246,6 +246,199 @@ export function progressBar(
   return `[${filled.repeat(filledWidth)}${empty.repeat(emptyWidth)}]${percentStr}`;
 }
 
+/**
+ * Create dashboard section header with underline
+ */
+export function sectionHeader(title: string, width?: number): string {
+  const line = width ? horizontalLine(width, '=') : '='.repeat(Bun.stringWidth(title));
+  return `${title}\n${line}`;
+}
+
+/**
+ * Format metric with value and unit, properly aligned
+ */
+export function formatMetric(
+  label: string,
+  value: string | number,
+  unit?: string,
+  labelWidth = 20
+): string {
+  const valueStr = typeof value === 'number' ? value.toLocaleString() : value;
+  const fullValue = unit ? `${valueStr} ${unit}` : valueStr;
+  return padEnd(label, labelWidth) + fullValue;
+}
+
+/**
+ * Create a two-column dashboard layout
+ */
+export function twoColumnLayout(
+  left: string[],
+  right: string[],
+  totalWidth?: number
+): string[] {
+  const maxLeftWidth = Math.max(...left.map(line => Bun.stringWidth(line)));
+  const separator = '  │  ';
+  const result: string[] = [];
+
+  const maxLines = Math.max(left.length, right.length);
+  
+  for (let i = 0; i < maxLines; i++) {
+    const leftLine = left[i] || '';
+    const rightLine = right[i] || '';
+    const paddedLeft = padEnd(leftLine, maxLeftWidth);
+    result.push(paddedLeft + separator + rightLine);
+  }
+
+  return result;
+}
+
+/**
+ * Format financial ticker row
+ */
+export function formatTickerRow(
+  symbol: string,
+  price: number,
+  change: number,
+  changePercent: number,
+  volume: number,
+  high: number,
+  low: number,
+  spread: number,
+  vwap: number,
+  signal: string,
+  columnWidths: number[]
+): string {
+  const data = [
+    symbol,
+    `$${price.toFixed(2)}`,
+    change >= 0 ? `+${change.toFixed(2)}` : change.toFixed(2),
+    `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`,
+    volume.toLocaleString(),
+    `$${high.toFixed(2)}`,
+    `$${low.toFixed(2)}`,
+    `$${spread.toFixed(2)}`,
+    `$${vwap.toFixed(2)}`,
+    signal
+  ];
+
+  return data.map((cell, i) => formatCell(cell, columnWidths[i], 'left')).join(' ');
+}
+
+/**
+ * Create table with box drawing characters
+ */
+export function createTable(
+  headers: string[],
+  rows: string[][],
+  options: { 
+    showHeaders?: boolean; 
+    colors?: boolean;
+    maxWidth?: number;
+  } = {}
+): string {
+  const { showHeaders = true, colors = false, maxWidth } = options;
+  
+  const allRows = showHeaders ? [headers, ...rows] : rows;
+  const columnWidths = calculateColumnWidths(allRows, maxWidth);
+  
+  const horizontal = (char = '─') => 
+    '┌' + columnWidths.map(w => char.repeat(w)).join('┬') + '┐';
+  const separator = (char = '─') => 
+    '├' + columnWidths.map(w => char.repeat(w)).join('┼') + '┤';
+  const bottom = (char = '─') => 
+    '└' + columnWidths.map(w => char.repeat(w)).join('┴') + '┘';
+  
+  const result: string[] = [horizontal()];
+  
+  if (showHeaders) {
+    const headerRow = '│' + headers.map((h, i) => 
+      formatCell(h, columnWidths[i], 'center')
+    ).join('│') + '│';
+    result.push(headerRow);
+    result.push(separator());
+  }
+  
+  for (const row of rows) {
+    const dataRow = '│' + row.map((cell, i) => 
+      formatCell(cell, columnWidths[i], 'left')
+    ).join('│') + '│';
+    result.push(dataRow);
+  }
+  
+  result.push(bottom());
+  return result.join('\n');
+}
+
+/**
+ * Format network interface information
+ */
+export function formatNetworkInterface(
+  interfaceName: string,
+  family: string,
+  address: string,
+  type: string,
+  netmask: string,
+  cidr: string,
+  mac: string,
+  scope: string,
+  internal: string,
+  status: string,
+  columnWidths: number[]
+): string {
+  const data = [
+    interfaceName,
+    family,
+    address,
+    type,
+    netmask,
+    cidr,
+    mac,
+    scope,
+    internal,
+    status
+  ];
+
+  return data.map((cell, i) => formatCell(cell, columnWidths[i], 'left')).join('\t');
+}
+
+/**
+ * Format health status with color indicators
+ */
+export function formatHealthStatus(
+  component: string,
+  status: 'HEALTHY' | 'WARNING' | 'CRITICAL' | 'DEGRADED',
+  componentWidth = 15
+): string {
+  const statusIcons = {
+    HEALTHY: '✓',
+    WARNING: '⚠',
+    CRITICAL: '✗',
+    DEGRADED: '◐'
+  };
+  
+  const icon = statusIcons[status];
+  return padEnd(component, componentWidth) + `${icon} ${status}`;
+}
+
+/**
+ * Create dashboard summary box
+ */
+export function createSummaryBox(
+  title: string,
+  content: string[],
+  width = 50
+): string {
+  const titleLine = padCenter(title, width, '═');
+  const contentLines = content.map(line => 
+    `║ ${padEnd(line, width - 4)} ║`
+  );
+  
+  const top = `╔${'═'.repeat(width - 2)}╗`;
+  const bottom = `╚${'═'.repeat(width - 2)}╝`;
+  
+  return [top, titleLine, top, ...contentLines, bottom].join('\n');
+}
+
 // Export as namespace for convenient access
 export const StringWidth = {
   width: stringWidth,
@@ -259,7 +452,15 @@ export const StringWidth = {
   stripAnsi,
   containsEmoji,
   horizontalLine,
-  progressBar
+  progressBar,
+  sectionHeader,
+  formatMetric,
+  twoColumnLayout,
+  formatTickerRow,
+  createTable,
+  formatNetworkInterface,
+  formatHealthStatus,
+  createSummaryBox
 };
 
 export default StringWidth;
