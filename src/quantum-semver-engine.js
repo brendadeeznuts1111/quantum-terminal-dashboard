@@ -14,6 +14,84 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join, basename, dirname } from 'path';
 
+/**
+ * Custom semver utilities (Bun only provides satisfies/order)
+ */
+const SemverUtils = {
+  // Parse semver string into components
+  parse(version) {
+    if (!version || typeof version !== 'string') return null;
+
+    // Match: major.minor.patch[-prerelease][+build]
+    const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/);
+    if (!match) return null;
+
+    return {
+      major: parseInt(match[1], 10),
+      minor: parseInt(match[2], 10),
+      patch: parseInt(match[3], 10),
+      prerelease: match[4] ? match[4].split('.') : [],
+      build: match[5] ? match[5].split('.') : [],
+      raw: version
+    };
+  },
+
+  // Compare using Bun.semver.order
+  gt(v1, v2) { return Bun.semver.order(v1, v2) === 1; },
+  lt(v1, v2) { return Bun.semver.order(v1, v2) === -1; },
+  eq(v1, v2) { return Bun.semver.order(v1, v2) === 0; },
+
+  // Determine what changed between versions
+  diff(v1, v2) {
+    const p1 = this.parse(v1);
+    const p2 = this.parse(v2);
+    if (!p1 || !p2) return null;
+
+    if (p1.major !== p2.major) return 'major';
+    if (p1.minor !== p2.minor) return 'minor';
+    if (p1.patch !== p2.patch) return 'patch';
+    if (p1.prerelease.join('.') !== p2.prerelease.join('.')) return 'prerelease';
+    if (p1.build.join('.') !== p2.build.join('.')) return 'build';
+    return null;
+  },
+
+  // Increment version
+  inc(version, type, prereleaseId = 'alpha') {
+    const p = this.parse(version);
+    if (!p) return null;
+
+    switch (type) {
+      case 'major':
+        return `${p.major + 1}.0.0`;
+      case 'minor':
+        return `${p.major}.${p.minor + 1}.0`;
+      case 'patch':
+        return `${p.major}.${p.minor}.${p.patch + 1}`;
+      case 'premajor':
+        return `${p.major + 1}.0.0-${prereleaseId}.0`;
+      case 'preminor':
+        return `${p.major}.${p.minor + 1}.0-${prereleaseId}.0`;
+      case 'prepatch':
+        return `${p.major}.${p.minor}.${p.patch + 1}-${prereleaseId}.0`;
+      case 'prerelease':
+        if (p.prerelease.length > 0) {
+          // Increment last numeric segment
+          const last = p.prerelease[p.prerelease.length - 1];
+          const num = parseInt(last, 10);
+          if (!isNaN(num)) {
+            p.prerelease[p.prerelease.length - 1] = String(num + 1);
+          } else {
+            p.prerelease.push('0');
+          }
+          return `${p.major}.${p.minor}.${p.patch}-${p.prerelease.join('.')}`;
+        }
+        return `${p.major}.${p.minor}.${p.patch + 1}-${prereleaseId}.0`;
+      default:
+        return null;
+    }
+  }
+};
+
 class QuantumSemverEngine {
   constructor() {
     this.version = this.loadVersion();
@@ -31,14 +109,14 @@ class QuantumSemverEngine {
       const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
       return {
         full: pkg.version,
-        parsed: Bun.semver.parse(pkg.version),
+        parsed: SemverUtils.parse(pkg.version),
         package: pkg
       };
     } catch {
-      const version = process.env.QUANTUM_VERSION || '1.0.0-development';
+      const version = process.env.QUANTUM_VERSION || '1.0.0';
       return {
         full: version,
-        parsed: Bun.semver.parse(version),
+        parsed: SemverUtils.parse(version),
         package: { version }
       };
     }
@@ -183,7 +261,7 @@ class QuantumSemverEngine {
 
     return {
       full: version,
-      parsed: Bun.semver.parse(version)
+      parsed: SemverUtils.parse(version)
     };
   }
 
@@ -243,8 +321,8 @@ export const CHANNEL = ${JSON.stringify(channel)};
 // Bun.semver utilities
 export const satisfies = (range) => Bun.semver.satisfies(VERSION, range);
 export const compare = (other) => Bun.semver.order(VERSION, other);
-export const isStable = () => !Bun.semver.parse(VERSION).prerelease?.length;
-export const isPreRelease = () => (Bun.semver.parse(VERSION).prerelease?.length || 0) > 0;
+export const isStable = () => !SemverUtils.parse(VERSION).prerelease?.length;
+export const isPreRelease = () => (SemverUtils.parse(VERSION).prerelease?.length || 0) > 0;
 
 export class ${component.replace(/[^a-zA-Z0-9]/g, '')}Component {
   static VERSION = VERSION;
@@ -309,19 +387,19 @@ export default ${component.replace(/[^a-zA-Z0-9]/g, '')}Component;
    * Check version compatibility using Bun.semver
    */
   checkCompatibility(version1, version2, options = {}) {
-    const v1 = Bun.semver.parse(version1);
-    const v2 = Bun.semver.parse(version2);
+    const v1 = SemverUtils.parse(version1);
+    const v2 = SemverUtils.parse(version2);
 
     return {
       compatible: Bun.semver.satisfies(version1, `^${version2}`) ||
                   Bun.semver.satisfies(version2, `^${version1}`),
       order: Bun.semver.order(version1, version2),
-      diff: Bun.semver.diff(version1, version2),
+      diff: SemverUtils.diff(version1, version2),
       sameMajor: v1.major === v2.major,
       sameMinor: v1.minor === v2.minor,
       samePatch: v1.patch === v2.patch,
-      canUpgrade: Bun.semver.gt(version1, version2),
-      canDowngrade: Bun.semver.lt(version1, version2),
+      canUpgrade: SemverUtils.gt(version1, version2),
+      canDowngrade: SemverUtils.lt(version1, version2),
       v1IsPrerelease: v1.prerelease?.length > 0,
       v2IsPrerelease: v2.prerelease?.length > 0
     };
@@ -336,25 +414,25 @@ export default ${component.replace(/[^a-zA-Z0-9]/g, '')}Component;
 
     switch (type) {
       case 'major':
-        newVersion = Bun.semver.inc(current, 'major');
+        newVersion = SemverUtils.inc(current, 'major');
         break;
       case 'minor':
-        newVersion = Bun.semver.inc(current, 'minor');
+        newVersion = SemverUtils.inc(current, 'minor');
         break;
       case 'patch':
-        newVersion = Bun.semver.inc(current, 'patch');
+        newVersion = SemverUtils.inc(current, 'patch');
         break;
       case 'premajor':
-        newVersion = Bun.semver.inc(current, 'premajor', prereleaseId || 'alpha');
+        newVersion = SemverUtils.inc(current, 'premajor', prereleaseId || 'alpha');
         break;
       case 'preminor':
-        newVersion = Bun.semver.inc(current, 'preminor', prereleaseId || 'alpha');
+        newVersion = SemverUtils.inc(current, 'preminor', prereleaseId || 'alpha');
         break;
       case 'prepatch':
-        newVersion = Bun.semver.inc(current, 'prepatch', prereleaseId || 'alpha');
+        newVersion = SemverUtils.inc(current, 'prepatch', prereleaseId || 'alpha');
         break;
       case 'prerelease':
-        newVersion = Bun.semver.inc(current, 'prerelease', prereleaseId || 'alpha');
+        newVersion = SemverUtils.inc(current, 'prerelease', prereleaseId || 'alpha');
         break;
       default:
         throw new Error(`Unknown bump type: ${type}`);
@@ -369,7 +447,7 @@ export default ${component.replace(/[^a-zA-Z0-9]/g, '')}Component;
 
       this.version = {
         full: newVersion,
-        parsed: Bun.semver.parse(newVersion),
+        parsed: SemverUtils.parse(newVersion),
         package: pkg
       };
 
@@ -481,20 +559,20 @@ class QuantumBuildPipeline {
  * Semver utility functions
  */
 const QuantumSemverUtils = {
-  parse: (version) => Bun.semver.parse(version),
+  parse: (version) => SemverUtils.parse(version),
   satisfies: (version, range) => Bun.semver.satisfies(version, range),
   compare: (v1, v2) => Bun.semver.order(v1, v2),
-  diff: (v1, v2) => Bun.semver.diff(v1, v2),
-  bump: (version, type, id) => Bun.semver.inc(version, type, id),
-  gt: (v1, v2) => Bun.semver.gt(v1, v2),
-  lt: (v1, v2) => Bun.semver.lt(v1, v2),
-  eq: (v1, v2) => Bun.semver.eq(v1, v2),
+  diff: (v1, v2) => SemverUtils.diff(v1, v2),
+  bump: (version, type, id) => SemverUtils.inc(version, type, id),
+  gt: (v1, v2) => SemverUtils.gt(v1, v2),
+  lt: (v1, v2) => SemverUtils.lt(v1, v2),
+  eq: (v1, v2) => SemverUtils.eq(v1, v2),
 
   latest: (versions) => versions.sort(Bun.semver.order).pop(),
 
   filterByChannel: (versions, channel) => {
     return versions.filter(v => {
-      const parsed = Bun.semver.parse(v);
+      const parsed = SemverUtils.parse(v);
       if (channel === 'stable') return !parsed.prerelease?.length;
       return parsed.prerelease?.[0] === channel;
     });
@@ -589,13 +667,13 @@ if (import.meta.main) {
     const testVersion = '1.3.5-beta.2+simd.accelerated';
     console.log(`Test version: ${testVersion}`);
 
-    const parsed = Bun.semver.parse(testVersion);
+    const parsed = SemverUtils.parse(testVersion);
     console.log(`Parsed:`, parsed);
 
     console.log(`Satisfies ^1.3.0: ${Bun.semver.satisfies(testVersion, '^1.3.0')}`);
     console.log(`Order vs 1.3.4: ${Bun.semver.order(testVersion, '1.3.4')}`);
-    console.log(`Diff vs 1.3.5: ${Bun.semver.diff(testVersion, '1.3.5')}`);
-    console.log(`Increment prerelease: ${Bun.semver.inc(testVersion, 'prerelease', 'beta')}`);
+    console.log(`Diff vs 1.3.5: ${SemverUtils.diff(testVersion, '1.3.5')}`);
+    console.log(`Increment prerelease: ${SemverUtils.inc(testVersion, 'prerelease', 'beta')}`);
 
   } else {
     console.log(`
