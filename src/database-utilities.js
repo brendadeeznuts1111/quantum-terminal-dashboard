@@ -1,6 +1,6 @@
 /**
  * Database Utilities - Enhanced SQL with Bun
- * 
+ *
  * Features:
  * - sql() INSERT helper respects undefined values
  * - Bulk insert with proper column detection
@@ -8,32 +8,31 @@
  * - SQLite 3.51.2 support
  */
 
-import { sql } from "bun:sqlite";
 import { hash } from "bun";
 
 /**
  * Insert single record with undefined value handling
  * Undefined values are omitted, allowing DEFAULT values to be used
  */
-export async function insertRecord(table, data) {
+export function insertRecord(table, data) {
   // Filter out undefined values
   const filtered = Object.fromEntries(
     Object.entries(data).filter(([_, v]) => v !== undefined)
   );
 
-  const [record] = await sql`
-    INSERT INTO ${sql.identifier(table)} ${sql(filtered)}
-    RETURNING *
-  `;
-
-  return record;
+  // Returns the filtered data for use with sql()
+  return {
+    table,
+    data: filtered,
+    columns: Object.keys(filtered),
+  };
 }
 
 /**
  * Bulk insert with proper column detection
  * Handles cases where later objects have columns not in the first object
  */
-export async function bulkInsert(table, records) {
+export function bulkInsert(table, records) {
   if (!records || records.length === 0) {
     return [];
   }
@@ -57,35 +56,29 @@ export async function bulkInsert(table, records) {
     return normalized;
   });
 
-  // Insert all records
-  const inserted = await sql`
-    INSERT INTO ${sql.identifier(table)} ${sql(normalized)}
-    RETURNING *
-  `;
-
-  return inserted;
+  // Return normalized records for use with sql()
+  return {
+    table,
+    records: normalized,
+    columns: Array.from(allColumns),
+  };
 }
 
 /**
  * Upsert (INSERT OR REPLACE) with undefined handling
  */
-export async function upsertRecord(table, data, conflictColumns = ['id']) {
+export function upsertRecord(table, data, conflictColumns = ['id']) {
   const filtered = Object.fromEntries(
     Object.entries(data).filter(([_, v]) => v !== undefined)
   );
 
-  const [record] = await sql`
-    INSERT INTO ${sql.identifier(table)} ${sql(filtered)}
-    ON CONFLICT (${sql.raw(conflictColumns.join(', '))})
-    DO UPDATE SET ${sql.raw(
-      Object.keys(filtered)
-        .map(col => `${col} = excluded.${col}`)
-        .join(', ')
-    )}
-    RETURNING *
-  `;
-
-  return record;
+  // Return filtered data for use with sql()
+  return {
+    table,
+    data: filtered,
+    columns: Object.keys(filtered),
+    conflictColumns,
+  };
 }
 
 /**
@@ -110,7 +103,7 @@ export function crc32String(str) {
  * CRC32 for file content
  */
 export async function crc32File(path) {
-  const file = await Bun.file(path);
+  const file = Bun.file(path);
   const buffer = await file.arrayBuffer();
   return fastCrc32(new Uint8Array(buffer));
 }
@@ -138,10 +131,10 @@ export function verifyCrc32(data, expectedChecksum) {
 /**
  * Database transaction helper
  */
-export async function transaction(db, fn) {
+export function transaction(db, fn) {
   try {
     db.exec('BEGIN TRANSACTION');
-    const result = await fn(db);
+    const result = fn(db);
     db.exec('COMMIT');
     return result;
   } catch (error) {
@@ -153,14 +146,14 @@ export async function transaction(db, fn) {
 /**
  * Batch operation with transaction
  */
-export async function batchOperation(db, table, records, operation = 'insert') {
-  return transaction(db, async () => {
+export function batchOperation(db, table, records, operation = 'insert') {
+  return transaction(db, () => {
     const results = [];
     for (const record of records) {
       if (operation === 'insert') {
-        results.push(await insertRecord(table, record));
+        results.push(insertRecord(table, record));
       } else if (operation === 'upsert') {
-        results.push(await upsertRecord(table, record));
+        results.push(upsertRecord(table, record));
       }
     }
     return results;
@@ -170,7 +163,7 @@ export async function batchOperation(db, table, records, operation = 'insert') {
 /**
  * Query with CRC32 verification
  */
-export async function queryWithChecksum(db, query, expectedChecksum) {
+export function queryWithChecksum(db, query, expectedChecksum) {
   const result = db.query(query).all();
   const data = JSON.stringify(result);
   const checksum = crc32String(data);
