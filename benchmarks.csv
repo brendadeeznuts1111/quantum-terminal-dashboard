@@ -1,6 +1,11 @@
-Operation,Before,Current,Gain,Impact,tags,timestamp,owner,metrics
-Buffer.indexOf(),3.25s,6.94ms,2x (SIMD),High,"buffer,simd,perf",2026-01-18T16:20:00Z,maintainer.author.name,"144164 ops/sec, SIMD-enabled"
-Bun.spawnSync(),13ms,2.462ms,5.3x,Critical,"spawn,posix,macos",2026-01-18T16:20:00Z,maintainer.author.name,"FD opt, min/max 1.125/4.936ms"
-Promise.race(),baseline,1.27M ops/s,1.3x,Medium,"promise,race,perf",2026-01-18T16:20:00Z,maintainer.author.name,"0.79ms time"
-IPC Communication,baseline,optimized,1.3x,High,"ipc,comm,perf",2026-01-18T16:20:00Z,maintainer.author.name,"Heap 22.0/1.4 MB, RSS 24.5 MB"
-Response.json(),2415ms,3.32ms,726.8x,High,"response,json,simd",2026-01-18T16:20:00Z,maintainer.author.name,"300940 ops/sec, FastStringifier SIMD"
+Operation,Before,Current,Gain,Impact,P95,P99,SIMD,Platform,Optimization,tags,timestamp,owner,metrics
+Buffer.indexOf(),3.25s,14137 ops/s,2x,High,N/A,N/A,YES,darwin arm64,SIMD vectorized,"buffer,simd,search,indexOf",2026-01-18T16:35:00Z,maintainer.author.name,"SIMD-enabled, Bun 1.3.6"
+Buffer.includes(),baseline,7628 ops/s,2x,High,N/A,N/A,YES,darwin arm64,SIMD vectorized,"buffer,simd,includes",2026-01-18T16:35:00Z,maintainer.author.name,"SIMD-enabled, Bun 1.3.6"
+Buffer.binarySearch(),N/A,31478 ops/s,N/A,Medium,N/A,N/A,YES,darwin arm64,Custom impl,"buffer,binary,search",2026-01-18T16:35:00Z,maintainer.author.name,"Custom implementation"
+Buffer.throughput(),8160 MB/s,16320 MB/s,2x,High,N/A,N/A,YES,darwin arm64,SIMD path,"buffer,throughput,simd,hyper",2026-01-18T16:35:00Z,maintainer.author.name,"Hyper Engine benchmark"
+Bun.spawnSync(),13ms,1.596ms,8.1x,Critical,5.407ms,7.717ms,N/A,darwin arm64,posix_spawn,"spawn,process,fd,macos",2026-01-18T16:35:00Z,maintainer.author.name,"FD opt posix_spawn native"
+Promise.race(),1.9M ops/s,3.1M ops/s,1.3x,Medium,N/A,N/A,N/A,darwin arm64,Bun optimized,"promise,race,async,perf",2026-01-18T16:35:00Z,maintainer.author.name,"Hyper Engine 3110863 ops/s"
+Response.json(),3165 ops/s,11079 ops/s,3.5x,High,N/A,N/A,YES,darwin arm64,FastStringifier,"response,json,simd,fast",2026-01-18T16:35:00Z,maintainer.author.name,"SIMD FastStringifier path"
+Tension.engine(),N/A,3958568 ops/s,N/A,Medium,N/A,N/A,N/A,darwin arm64,In-memory,"tension,engine,state,hyper",2026-01-18T16:35:00Z,maintainer.author.name,"Hyper Engine tension ops"
+IPC.communication(),baseline,optimized,1.3x,High,N/A,N/A,N/A,darwin arm64,Worker threads,"ipc,worker,comm,perf",2026-01-18T16:35:00Z,maintainer.author.name,"Worker IPC messaging"
+DNS.lookup(),N/A,1.26ms,N/A,Medium,N/A,N/A,N/A,darwin arm64,System resolver,"dns,lookup,network,cache",2026-01-18T16:35:00Z,maintainer.author.name,"google.com cached lookup"
