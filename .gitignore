@@ -1,0 +1,10 @@
+node_modules/
+dist/
+builds/
+.build-cache/
+.deployments/
+benchmarks/
+reports/
+*.log
+.DS_Store
+bun.lockb
