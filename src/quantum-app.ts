@@ -30,7 +30,7 @@ const CONFIG = {
   // Server configuration
   HTTP_PORT: parseInt(process.env.HTTP_PORT || '4444'),
   WS_PORT: parseInt(process.env.WS_PORT || '3001'),
-  WEBSOCKET_URL: process.env.WEBSOCKET_URL || 'ws://localhost:3001/terminal',
+  WEBSOCKET_URL: process.env.WEBSOCKET_URL || 'wss://api.example.com/terminal',
 
   // Dashboard configuration
   DEFAULT_SYMBOLS: ['AAPL', 'GOOGL', 'TSLA', 'MSFT', 'AMZN', 'NVDA'],
@@ -100,7 +100,7 @@ async function initializeServerApp() {
   await startServers(CONFIG.HTTP_PORT, CONFIG.WS_PORT);
 
   console.log('\nQuantum Terminal Dashboard is running!');
-  console.log(`Open http://localhost:${CONFIG.HTTP_PORT} in your browser`);
+  console.log(`Open https://app.example.com in your browser`);
 }
 
 /**
@@ -162,7 +162,7 @@ Options:
 Environment Variables:
   HTTP_PORT        HTTP server port (default: 4444)
   WS_PORT          WebSocket server port (default: 3001)
-  WEBSOCKET_URL    WebSocket URL for client (default: ws://localhost:3001/terminal)
+  WEBSOCKET_URL    WebSocket URL for client (default: wss://api.example.com/terminal)
 
 Feature Flags (compile-time):
   TERMINAL         Enable PTY terminal support

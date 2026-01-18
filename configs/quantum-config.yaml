@@ -131,7 +131,7 @@ deployment:
   # Environments
   environments:
     development:
-      url: http://localhost:3000
+      url: http://api.example.com
       features:
         - DEBUG
 
@@ -201,7 +201,7 @@ security:
   cors:
     enabled: true
     origins:
-      - http://localhost:*
+      - https://api.example.com:*
       - https://*.quantum-dashboard.example.com
     methods:
       - GET

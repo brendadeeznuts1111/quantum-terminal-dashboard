@@ -28,7 +28,7 @@ async function testBasicFetch() {
 
   try {
     console.log("🔍 Testing basic GET request:");
-    const response = await fetch("http://localhost:3000/basic-fetch");
+    const response = await fetch("http://api.example.com/basic-fetch");
 
     console.log(`   ✅ Status: ${response.status}`);
     console.log(`   📄 Status Text: ${response.statusText}`);
@@ -58,7 +58,7 @@ async function testPostRequest() {
   try {
     // Test JSON POST
     console.log("🔍 Testing JSON POST request:");
-    const jsonResponse = await fetch("http://localhost:3000/post-request", {
+    const jsonResponse = await fetch("http://api.example.com/post-request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +80,7 @@ async function testPostRequest() {
 
     // Test Form POST
     console.log("\n🔍 Testing Form POST request:");
-    const formResponse = await fetch("http://localhost:3000/post-request", {
+    const formResponse = await fetch("http://api.example.com/post-request", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -98,7 +98,7 @@ async function testPostRequest() {
 
     // Test Text POST
     console.log("\n🔍 Testing Text POST request:");
-    const textResponse = await fetch("http://localhost:3000/post-request", {
+    const textResponse = await fetch("http://api.example.com/post-request", {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
@@ -126,7 +126,7 @@ async function testCustomHeaders() {
 
   try {
     console.log("🔍 Testing custom headers:");
-    const response = await fetch("http://localhost:3000/custom-headers", {
+    const response = await fetch("http://api.example.com/custom-headers", {
       headers: {
         "X-Custom-Header": "demo-value",
         "X-API-Key": "test-api-key-12345",
@@ -173,7 +173,7 @@ async function testResponseBodies() {
   try {
     // Test JSON response
     console.log("🔍 Testing JSON response:");
-    const jsonResponse = await fetch("http://localhost:3000/response-bodies", {
+    const jsonResponse = await fetch("http://api.example.com/response-bodies", {
       headers: {
         Accept: "application/json",
       },
@@ -189,7 +189,7 @@ async function testResponseBodies() {
 
     // Test Text response
     console.log("\n🔍 Testing Text response:");
-    const textResponse = await fetch("http://localhost:3000/response-bodies", {
+    const textResponse = await fetch("http://api.example.com/response-bodies", {
       headers: {
         Accept: "text/plain",
       },
@@ -206,7 +206,7 @@ async function testResponseBodies() {
 
     // Test Bytes response
     console.log("\n🔍 Testing Bytes response:");
-    const bytesResponse = await fetch("http://localhost:3000/response-bodies", {
+    const bytesResponse = await fetch("http://api.example.com/response-bodies", {
       headers: {
         Accept: "application/octet-stream",
       },
@@ -231,7 +231,7 @@ async function testStreaming() {
 
   try {
     console.log("🔍 Testing streaming response:");
-    const response = await fetch("http://localhost:3000/streaming");
+    const response = await fetch("http://api.example.com/streaming");
 
     if (response.ok) {
       console.log(`   ✅ Streaming Status: ${response.status}`);
@@ -275,7 +275,7 @@ async function testTimeout() {
 
     // Test with 1 second timeout
     console.log("   Testing with 1 second timeout:");
-    const response1 = await fetch("http://localhost:3000/timeout?timeout=500", {
+    const response1 = await fetch("http://api.example.com/timeout?timeout=500", {
       signal: AbortSignal.timeout(1000),
     });
 
@@ -289,7 +289,7 @@ async function testTimeout() {
     console.log("\n   Testing with 100ms timeout (should fail):");
     try {
       const response2 = await fetch(
-        "http://localhost:3000/timeout?timeout=2000",
+        "http://api.example.com/timeout?timeout=2000",
         {
           signal: AbortSignal.timeout(100),
         },
@@ -306,7 +306,7 @@ async function testTimeout() {
 
     try {
       const response3 = await fetch(
-        "http://localhost:3000/timeout?timeout=2000",
+        "http://api.example.com/timeout?timeout=2000",
         {
           signal: controller.signal,
         },
@@ -329,7 +329,7 @@ async function testProxy() {
 
   try {
     console.log("🔍 Testing proxy headers:");
-    const response = await fetch("http://localhost:3000/proxy", {
+    const response = await fetch("http://api.example.com/proxy", {
       headers: {
         "Proxy-Authorization": "Bearer proxy-token-12345",
         "X-Custom-Proxy-Header": "custom-value",
@@ -381,7 +381,7 @@ async function testUpload() {
     const blob = new Blob(["Sample file content"], { type: "text/plain" });
     formData.append("file", blob, "sample.txt");
 
-    const response = await fetch("http://localhost:3000/upload", {
+    const response = await fetch("http://api.example.com/upload", {
       method: "POST",
       body: formData,
     });
@@ -555,26 +555,26 @@ async function testCurlCommands() {
     // Basic fetch
     console.log("\n🔍 Testing basic fetch with curl:");
     const basicResult =
-      await Bun.$`curl -s -w "Status: %{http_code}, Time: %{time_total}s\\n" http://localhost:3000/basic-fetch`.text();
+      await Bun.$`curl -s -w "Status: %{http_code}, Time: %{time_total}s\\n" http://api.example.com/basic-fetch`.text();
     console.log(`   ${basicResult}`);
 
     // POST request
     console.log("\n🔍 Testing POST with curl:");
     const postResult =
-      await Bun.$`curl -s -w "Status: %{http_code}, Size: %{size_download} bytes\\n" -X POST -H "Content-Type: application/json" -d '{"test": true}' http://localhost:3000/post-request`.text();
+      await Bun.$`curl -s -w "Status: %{http_code}, Size: %{size_download} bytes\\n" -X POST -H "Content-Type: application/json" -d '{"test": true}' http://api.example.com/post-request`.text();
     console.log(`   ${postResult}`);
 
     // Custom headers
     console.log("\n🔍 Testing custom headers with curl:");
     const headersResult =
-      await Bun.$`curl -s -w "Status: %{http_code}\\n" -H "X-Custom-Header: curl-test" -H "X-API-Key: curl-key" http://localhost:3000/custom-headers`.text();
+      await Bun.$`curl -s -w "Status: %{http_code}\\n" -H "X-Custom-Header: curl-test" -H "X-API-Key: curl-key" http://api.example.com/custom-headers`.text();
     console.log(`   ${headersResult}`);
 
     // Streaming
     console.log("\n🔍 Testing streaming with curl:");
     console.log("   (First 3 lines of streaming response):");
     const streamResult =
-      await Bun.$`curl -s -m 5 http://localhost:3000/streaming | head -3`.text();
+      await Bun.$`curl -s -m 5 http://api.example.com/streaming | head -3`.text();
     console.log(`   ${streamResult}`);
   } catch (error) {
     console.error("❌ Curl test error:", error.message);
@@ -622,7 +622,7 @@ async function runAllTests() {
 
     console.log("\n🌐 Server Information:");
     console.log("   🎯 Target URL: https://staging-api.example.com/");
-    console.log("   🔧 Development URL: http://localhost:3000/");
+    console.log("   🔧 Development URL: http://api.example.com/");
     console.log("   🌐 Fetch Demo: Enabled");
     console.log("   📊 Features: 9 fetch endpoints");
     console.log("   🔧 Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");

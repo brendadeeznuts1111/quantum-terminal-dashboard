@@ -680,7 +680,7 @@ graph TD
     console.log("=".repeat(50));
     console.log(`✅ Deployed to ${target}`);
     console.log("📦 Bundle: ./dist/production/");
-    console.log(`🔗 Access: http://localhost:4003`);
+    console.log(`🔗 Access: https://api.example.com`);
 
     process.exitCode = 0;
     return;

@@ -49,10 +49,10 @@ async function startDev() {
   console.log(`
 ${COLORS.green}${COLORS.bold}Development servers running:${COLORS.reset}
 
-  ${COLORS.cyan}Dashboard:${COLORS.reset}  http://localhost:${httpPort}
+  ${COLORS.cyan}Dashboard:${COLORS.reset}  https://api.example.com:${httpPort}
   ${COLORS.cyan}Terminal:${COLORS.reset}   ws://localhost:${wsPort}/terminal
-  ${COLORS.cyan}Health:${COLORS.reset}     http://localhost:${wsPort}/health
-  ${COLORS.cyan}Sessions:${COLORS.reset}   http://localhost:${wsPort}/api/sessions
+  ${COLORS.cyan}Health:${COLORS.reset}     https://api.example.com:${wsPort}/health
+  ${COLORS.cyan}Sessions:${COLORS.reset}   https://api.example.com:${wsPort}/api/sessions
 
 ${COLORS.dim}Hot reload is enabled for server-side changes.${COLORS.reset}
 ${COLORS.dim}For client changes, refresh the browser.${COLORS.reset}

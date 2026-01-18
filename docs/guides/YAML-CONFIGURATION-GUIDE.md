@@ -79,7 +79,7 @@ interpolateEnvVars(obj) {
 ### **1. Server Configuration**
 ```yaml
 server:
-  host: "localhost"           # Server hostname
+  host: "127.0.0.1"          # Server hostname (development)
   port: 3000                 # Server port
   timeout: 5000              # Request timeout (ms)
   retries: 3                 # Retry attempts
@@ -88,7 +88,7 @@ server:
 ### **2. Database Configuration**
 ```yaml
 database:
-  host: "localhost"           # Database host
+  host: "127.0.0.1"          # Database host (development)
   port: 5432                 # Database port
   name: "quantum_lattice_dev" # Database name
   pool_size: 10              # Connection pool size
@@ -147,9 +147,10 @@ features:
 ```yaml
 development:
   server:
-    host: "localhost"
+    host: "127.0.0.1"
     port: 3000
   database:
+    host: "127.0.0.1"
     name: "quantum_lattice_dev"
   logging:
     level: "debug"
@@ -279,7 +280,7 @@ const server = createServer({
 ```
 🔹 Testing development environment:
    Environment: development
-   Server: localhost:3000
+   Server: api.example.com
    Database: quantum_lattice_dev
    Cache TTL: 300s
    Log Level: debug

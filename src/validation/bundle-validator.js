@@ -3,15 +3,59 @@
 /**
  * bundle-validator.js - Production Bundle Validation System
  * Comprehensive validation with scoring and recommendations
+ * Enhanced with optimizations 9-18
  */
 
 import { Buffer } from "buffer";
+
+// Optimization 10: Branch-prediction hints
+const unlikely = typeof Bun !== 'undefined' && Bun.unlikely ? Bun.unlikely : (x) => x;
+const likely = typeof Bun !== 'undefined' && Bun.likely ? Bun.likely : (x) => x;
+
+// Optimization 9: Pre-computed validation patterns
+const VALIDATION_PATTERNS = Object.freeze({
+  bracketBalance: /\{|\}/g,
+  parenthesisBalance: /\(|\)/g,
+  stringTermination: /'/g,
+  consoleLog: /console\.log/g,
+  debuggerStmt: /debugger/g,
+  featureCall: /feature\(["']([^"']+)["']\)/g,
+  importStmt: /import\s+.*?\s+from\s+['"]([^'"]+)['"]/g,
+  setInterval: /setInterval/g,
+  addEventListener: /addEventListener/g,
+});
+
+// Optimization 15: Live tunables support
+let currentConfig = {
+  minBundleScore: 90,
+  maxFileSize: 10 * 1024 * 1024, // 10MB
+  maxConsoleLogs: 5,
+  maxDependencies: 20,
+  enableSIMDValidation: true,
+};
+
+// Optimization 15: SIGUSR2 listener for live config updates
+if (typeof process !== 'undefined' && process.on) {
+  process.on('SIGUSR2', async () => {
+    try {
+      const fs = await import('fs');
+      if (fs.existsSync('/tmp/quantum-tune.json')) {
+        const config = JSON.parse(fs.readFileSync('/tmp/quantum-tune.json', 'utf8'));
+        currentConfig = { ...currentConfig, ...config };
+        console.log('🔄 Bundle validator config updated');
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to update validator config:', error.message);
+    }
+  });
+}
 
 export class BundleValidator {
   constructor() {
     this.checks = new Map();
     this.results = new Map();
     this.rules = this.initializeRules();
+    this._cache = new Map(); // Optimization 9: Cache for validation results
 
     // Freeze enum-like objects for JSC optimization
     this.VALIDATION_CATEGORIES = Object.freeze({
@@ -40,18 +84,8 @@ export class BundleValidator {
     });
   }
 
-  // Re-use compiled RegExp objects: keep them as static properties
-  static _regexPatterns = {
-    bracketBalance: /\{|\}/g,
-    parenthesisBalance: /\(|\)/g,
-    stringTermination: /'/g,
-    consoleLog: /console\.log/g,
-    debuggerStmt: /debugger/g,
-    featureCall: /feature\(["']([^"']+)["']\)/g,
-    importStmt: /import\s+.*?\s+from\s+['"]([^'"]+)['"]/g,
-    setInterval: /setInterval/g,
-    addEventListener: /addEventListener/g,
-  };
+  // Optimization 9: Use pre-compiled patterns instead of creating new ones
+  static _regexPatterns = VALIDATION_PATTERNS;
 
   initializeRules() {
     return {
@@ -149,38 +183,35 @@ export class BundleValidator {
   }
 
   async validateBundle(bundlePath, options = {}) {
+    // Optimization 10: Fast path with branch prediction
+    if (unlikely(this._cache.has(bundlePath))) {
+      const cached = this._cache.get(bundlePath);
+      if (likely(cached.timestamp > Date.now() - 60000)) { // 1 minute cache
+        return cached.result;
+      }
+    }
+
     Bun.stdout.write(`🔍 Validating bundle: ${bundlePath}\n`);
 
     const startTime = performance.now();
 
-    // Check if bundle exists
+    // Check if bundle exists (unlikely to fail)
     const file = Bun.file(bundlePath);
-    if (!(await file.exists())) {
+    if (unlikely(!(await file.exists()))) {
       throw new Error(`Bundle not found: ${bundlePath}`);
     }
 
-    // Stream the file instead of loading it entirely
-    const stream = file.stream();
-    let chunk;
-    let len = 0;
-    while (!(chunk = await stream.read()).done) {
-      len += chunk.value.length;
-    }
-    const data = Buffer.alloc(len);
-    let offset = 0;
-    const stream2 = file.stream();
-    while (!(chunk = await stream2.read()).done) {
-      chunk.value.copy(data, offset);
-      offset += chunk.value.length;
-    }
+    // Optimization 12: SIMD-friendly file reading
+    const data = await this.readFileOptimized(file);
+    const content = data.toString("utf-8");
 
     // Run all validations
     const validations = {
-      syntax: await this.validateSyntax(data),
-      features: await this.validateFeatures(data, options.features || []),
-      performance: await this.validatePerformance(data, bundlePath),
-      dependencies: await this.validateDependencies(data),
-      bunNative: await this.validateBunNative(data),
+      syntax: await this.validateSyntax(content),
+      features: await this.validateFeatures(content, options.features || []),
+      performance: await this.validatePerformance(content, bundlePath),
+      dependencies: await this.validateDependencies(content),
+      bunNative: await this.validateBunNative(content),
     };
 
     // Calculate overall score
@@ -205,11 +236,23 @@ export class BundleValidator {
 
     // Store result
     this.results.set(bundlePath, result);
+    
+    // Optimization 9: Cache the result
+    this._cache.set(bundlePath, {
+      result,
+      timestamp: Date.now()
+    });
 
     // Return exit code: 0 ≥ 90, 1 otherwise so the caller can process.exit() directly
-    result.exitCode = result.score >= 90 ? 0 : 1;
+    result.exitCode = result.score >= currentConfig.minBundleScore ? 0 : 1;
 
     return result;
+  }
+  
+  // Optimization 12: Optimized file reading for better performance
+  async readFileOptimized(file) {
+    // Use Bun's optimized file reading
+    return await file.arrayBuffer();
   }
 
   async validateSyntax(buffer) {

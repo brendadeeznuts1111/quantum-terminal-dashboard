@@ -46,7 +46,7 @@ async function testStagingAPIURL() {
   try {
     // Execute curl command to test the staging API
     const result =
-      await Bun.$`curl -s http://localhost:3000/ -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' -H 'sec-ch-ua: "Google Chrome";v="143"' -H 'sec-ch-ua-platform: "macOS"'`.text();
+      await Bun.$`curl -s https://staging-api.example.com/ -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' -H 'sec-ch-ua: "Google Chrome";v="143"' -H 'sec-ch-ua-platform: "macOS"'`.text();
 
     console.log("✅ Staging API request executed successfully!");
     console.log("📄 Response (first 500 characters):");
@@ -93,7 +93,7 @@ async function testAllStagingEndpoints() {
     console.log(`   URL: https://staging-api.example.com${endpoint.path}`);
 
     try {
-      const response = await fetch(`http://localhost:3000${endpoint.path}`, {
+      const response = await fetch(`https://staging-api.example.com${endpoint.path}`, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
@@ -144,7 +144,7 @@ async function testStagingHeaders() {
   console.log("-".repeat(60));
 
   try {
-    const response = await fetch("http://localhost:3000/api/v1/health", {
+    const response = await fetch("https://staging-api.example.com/api/v1/health", {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
@@ -181,7 +181,7 @@ async function testStagingFeatures() {
     // Test analytics endpoint (should be enabled in staging)
     console.log("🔍 Testing Analytics (should be enabled in staging):");
     const analyticsResponse = await fetch(
-      "http://localhost:3000/api/v1/analytics",
+      "https://staging-api.example.com/api/v1/analytics",
       {
         headers: {
           "User-Agent":
@@ -203,7 +203,7 @@ async function testStagingFeatures() {
     // Test experiments endpoint (should be enabled in staging)
     console.log("\n🔍 Testing A/B Experiments (should be enabled in staging):");
     const experimentsResponse = await fetch(
-      "http://localhost:3000/api/v1/experiments",
+      "https://staging-api.example.com/api/v1/experiments",
       {
         headers: {
           "User-Agent":
@@ -291,7 +291,7 @@ curl -s 'https://staging-api.example.com/api/v1/health' -o staging-response.json
   try {
     console.log("\n🔍 Executing test curl command:");
     const result =
-      await Bun.$`curl -s http://localhost:3000/api/v1/health`.text();
+      await Bun.$`curl -s https://staging-api.example.com/api/v1/health`.text();
     const data = JSON.parse(result);
     console.log(`   ✅ Status: ${data.status}`);
     console.log(`   🌍 Environment: ${data.environment}`);
@@ -411,7 +411,7 @@ async function runAllTests() {
     console.log("\n✅ All staging API tests completed successfully!");
     console.log("\n🌐 Staging API Server Information:");
     console.log(`   Primary URL: https://staging-api.example.com/`);
-    console.log(`   Development URL: http://localhost:3000/`);
+    console.log(`   Development URL: https://api.example.com/`);
     console.log(`   Environment: staging`);
     console.log(`   Version: v1`);
 

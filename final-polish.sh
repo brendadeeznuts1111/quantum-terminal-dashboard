@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 8. final-polish.sh
+# 8. final-polish.sh - Enhanced with optimizations 9-18
 
 set -euo pipefail
 
@@ -52,11 +52,13 @@ fi
 
 echo "📁 Using entry point: $ENTRY_POINT"
 
-# Build final bundle
-echo "📦 Building final bundle..."
+# Build final bundle with optimizations
+echo "📦 Building final bundle with optimizations..."
 bun build --target=bun --minify \
   --feature=PREMIUM \
   --feature=PERFORMANCE_MONITOR \
+  --feature=SIMD_BUFFER \
+  --feature=BUN_USE_WASM \
   --outfile=./dist/quantum-lattice.bun \
   "$ENTRY_POINT"
 
@@ -81,20 +83,44 @@ echo "📊 Build Stats:"
 echo "  Size: $((BUILD_SIZE / 1024)) kB"
 echo "  Boot time: $BUILD_TIME"
 
-# Performance benchmark
+# Performance benchmark with optimizations
 echo "⚡ Running performance benchmark..."
-if timeout 5s bun run ./dist/quantum-lattice.bun --version > /dev/null 2>&1; then
+if timeout 10s bun run ./dist/quantum-lattice.bun --version > /dev/null 2>&1; then
+  echo "🏃 Running 5 iterations..."
+  TOTAL_TIME=0
   for i in {1..5}; do
     START=$(date +%s%3N)
     if timeout 5s bun run ./dist/quantum-lattice.bun --version > /dev/null 2>&1; then
       END=$(date +%s%3N)
-      echo "  Run $i: $((END - START)) ms"
+      DURATION=$((END - START))
+      TOTAL_TIME=$((TOTAL_TIME + DURATION))
+      echo "  Run $i: ${DURATION} ms"
     else
       echo "  Run $i: TIMEOUT"
+      TOTAL_TIME=$((TOTAL_TIME + 5000))
     fi
   done
+  AVG_TIME=$((TOTAL_TIME / 5))
+  echo "📊 Average startup: ${AVG_TIME} ms"
+  
+  # Performance target check
+  if [ $AVG_TIME -le 12 ]; then
+    echo "✅ Cold start target met (≤12ms)"
+  else
+    echo "⚠️ Cold start target missed (>12ms)"
+  fi
 else
   echo "  ⚠️ Benchmark skipped - executable not responding"
+fi
+
+# Optimization 16: Binary strip & compression
+echo "✂️ Applying binary optimizations..."
+if [ -f "./scripts/optimize-binary.sh" ]; then
+  cd ./dist
+  ../scripts/optimize-binary.sh quantum-lattice.bun
+  cd ..
+else
+  echo "⚠️ Binary optimization script not found"
 fi
 
 # Check git status

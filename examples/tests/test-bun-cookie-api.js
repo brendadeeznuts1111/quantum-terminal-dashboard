@@ -29,7 +29,7 @@ async function testCookieReading() {
   try {
     // First visit - no cookies
     console.log("🔍 Testing profile page without cookies:");
-    const response1 = await fetch("http://localhost:3000/profile");
+    const response1 = await fetch("http://api.example.com/profile");
 
     if (response1.ok) {
       const data1 = await response1.json();
@@ -63,7 +63,7 @@ async function testCookieSetting() {
 
   try {
     console.log("🔍 Testing login endpoint (sets cookies):");
-    const response = await fetch("http://localhost:3000/login", {
+    const response = await fetch("http://api.example.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -111,13 +111,13 @@ async function testCookieModification() {
     console.log("🔍 Testing theme toggle (modifies existing cookies):");
 
     // First login to set cookies
-    const loginResponse = await fetch("http://localhost:3000/login");
+    const loginResponse = await fetch("http://api.example.com/login");
     const cookies = loginResponse.headers.getSetCookie();
 
     // Extract cookies for the theme request
     const cookieString = cookies.map((c) => c.split(";")[0]).join("; ");
 
-    const themeResponse = await fetch("http://localhost:3000/theme", {
+    const themeResponse = await fetch("http://api.example.com/theme", {
       headers: {
         Cookie: cookieString,
       },
@@ -158,14 +158,14 @@ async function testCookieDeletion() {
     console.log("🔍 Testing logout endpoint (deletes cookies):");
 
     // First login to set cookies
-    const loginResponse = await fetch("http://localhost:3000/login");
+    const loginResponse = await fetch("http://api.example.com/login");
     const cookies = loginResponse.headers.getSetCookie();
     const cookieString = cookies.map((c) => c.split(";")[0]).join("; ");
 
     console.log(`   🍪 Cookies before logout: ${cookies.length}`);
 
     // Logout to delete cookies
-    const logoutResponse = await fetch("http://localhost:3000/logout", {
+    const logoutResponse = await fetch("http://api.example.com/logout", {
       headers: {
         Cookie: cookieString,
       },
@@ -208,12 +208,12 @@ async function testCookieOverview() {
     console.log("🔍 Testing cookies overview endpoint:");
 
     // First login to set cookies
-    const loginResponse = await fetch("http://localhost:3000/login");
+    const loginResponse = await fetch("http://api.example.com/login");
     const cookies = loginResponse.headers.getSetCookie();
     const cookieString = cookies.map((c) => c.split(";")[0]).join("; ");
 
     // Get cookie overview
-    const overviewResponse = await fetch("http://localhost:3000/cookies", {
+    const overviewResponse = await fetch("http://api.example.com/cookies", {
       headers: {
         Cookie: cookieString,
       },
@@ -261,7 +261,7 @@ async function testHealthWithCookies() {
     console.log("🔍 Testing health endpoint with cookie information:");
 
     // Test without cookies
-    const response1 = await fetch("http://localhost:3000/api/v1/health");
+    const response1 = await fetch("http://api.example.com/api/v1/health");
     if (response1.ok) {
       const data1 = await response1.json();
       console.log("   📊 Without cookies:");
@@ -272,11 +272,11 @@ async function testHealthWithCookies() {
     }
 
     // Test with cookies
-    const loginResponse = await fetch("http://localhost:3000/login");
+    const loginResponse = await fetch("http://api.example.com/login");
     const cookies = loginResponse.headers.getSetCookie();
     const cookieString = cookies.map((c) => c.split(";")[0]).join("; ");
 
-    const response2 = await fetch("http://localhost:3000/api/v1/health", {
+    const response2 = await fetch("http://api.example.com/api/v1/health", {
       headers: {
         Cookie: cookieString,
       },
@@ -386,25 +386,25 @@ async function testCurlCommands() {
     // Test login with curl
     console.log("\n🔍 Testing login with curl:");
     const loginResult =
-      await Bun.$`curl -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://localhost:3000/login`.text();
+      await Bun.$`curl -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://api.example.com/login`.text();
     console.log(`   ${loginResult}`);
 
     // Test profile with curl
     console.log("\n🔍 Testing profile with curl:");
     const profileResult =
-      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://localhost:3000/profile`.text();
+      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://api.example.com/profile`.text();
     console.log(`   ${profileResult}`);
 
     // Test theme toggle with curl
     console.log("\n🔍 Testing theme toggle with curl:");
     const themeResult =
-      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://localhost:3000/theme`.text();
+      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://api.example.com/theme`.text();
     console.log(`   ${themeResult}`);
 
     // Test logout with curl
     console.log("\n🔍 Testing logout with curl:");
     const logoutResult =
-      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://localhost:3000/logout`.text();
+      await Bun.$`curl -b /tmp/cookies.txt -c /tmp/cookies.txt -s -w "Status: %{http_code}\\n" http://api.example.com/logout`.text();
     console.log(`   ${logoutResult}`);
 
     // Show cookie file contents
@@ -458,7 +458,7 @@ async function runAllTests() {
 
     console.log("\n🌐 Server Information:");
     console.log("   🎯 Target URL: https://staging-api.example.com/");
-    console.log("   🔧 Development URL: http://localhost:3000/");
+    console.log("   🔧 Development URL: http://api.example.com/");
     console.log("   🍪 Cookie Demo: Enabled");
     console.log("   🔒 Security: httpOnly, secure, sameSite");
     console.log("   📊 Features: Authentication, preferences, theme");

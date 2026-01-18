@@ -135,6 +135,21 @@ if [[ "$VALIDATION_RESULT" == *"failed"* ]]; then
 fi
 log_success "Bundle validation passed"
 
+# 8.5 Cookie-aware health check
+log_step "8.5" "Cookie-aware Health Check"
+echo "🍪 Testing cookie state..."
+STATUS=$(bun -e "
+  import { api } from './src/api.js';
+  const res = await api.fetch('/health');
+  console.log(res.status);
+")
+if [[ $STATUS -eq 200 ]]; then
+    log_success "Cookie-aware health check passed"
+else
+    log_error "Cookie-aware health check failed"
+    exit 1
+fi
+
 # 9. ES Module Compatibility Check
 log_step "9" "ES Module Compatibility Check"
 if bunx es-check@latest es2022 dist/**/*.js 2>/dev/null; then
@@ -242,7 +257,7 @@ echo "⚡ Starting quantum dashboard..."
 bun run dist/quantum-app.js
 
 echo "✅ Quantum Terminal Dashboard started"
-echo "🔗 Access: http://localhost:$HTTP_PORT"
+echo "🔗 Access: https://api.example.com:$HTTP_PORT"
 EOF
 
 chmod +x "$DEPLOY_DIR/start.sh"
@@ -259,7 +274,7 @@ echo "🏥 Quantum Dashboard Health Check"
 echo "================================="
 
 # Check HTTP server
-if curl -s "http://localhost:$HTTP_PORT/health" >/dev/null 2>&1; then
+if curl -s "https://api.example.com:$HTTP_PORT/health" >/dev/null 2>&1; then
     echo "✅ HTTP Server: Running"
 else
     echo "❌ HTTP Server: Down"
@@ -267,7 +282,7 @@ else
 fi
 
 # Check WebSocket server
-if curl -s "http://localhost:$WS_PORT/health" >/dev/null 2>&1; then
+if curl -s "https://api.example.com:$WS_PORT/health" >/dev/null 2>&1; then
     echo "✅ WebSocket Server: Running"
 else
     echo "❌ WebSocket Server: Down"

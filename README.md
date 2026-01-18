@@ -26,7 +26,7 @@ bun run perf:monitor
 # Run all benchmarks
 bun run src/quantum-simd-engine.js --benchmark
 
-# Start dev server
+# Start dev server (runs on https://api.example.com)
 bun run dev
 ```
 
@@ -34,7 +34,7 @@ bun run dev
 
 ```bash
 # Performance
-bun run perf:monitor          # Launch performance dashboard (http://localhost:4000)
+bun run perf:monitor          # Launch performance dashboard (https://dashboard.example.com)
 bun run perf:terminal         # Terminal-only performance view
 
 # Benchmarks
@@ -51,6 +51,10 @@ bun run build:dev             # Development build with HMR
 bun run terminal              # Interactive terminal
 bun run terminal:ticker       # Financial ticker
 bun run terminal:monitor      # System monitor
+
+# Servers
+bun run start:server          # HTTP dashboard (https://dashboard.example.com)
+bun run start:terminal        # Terminal WebSocket (wss://terminal.example.com/terminal)
 ```
 
 ## SIMD Engine
@@ -113,6 +117,56 @@ const terminal = await pty.spawn({
   env: { TERM: 'xterm-256color' }
 });
 ```
+
+## API Documentation
+
+Comprehensive API documentation is available in [`docs/api/`](./docs/api/):
+
+### Core APIs
+- **[Staging API Server](./docs/api/staging-api-server.md)** - Complete staging environment API with health checks, metrics, and analytics
+- **[Bun Fetch Client](./docs/api/bun-fetch-client.md)** - Advanced HTTP client with Bun-specific features
+- **[Terminal Server](./docs/api/terminal-server.md)** - WebSocket-based PTY terminal server
+- **[HTTP Server](./docs/api/http-server.md)** - Dashboard server with embedded React application
+
+### React Components
+- **[Terminal Components](./docs/api/terminal-components.md)** - WebSocketTerminal and FinancialTerminal components
+
+### Quick Start APIs
+
+```bash
+# Start staging API server (https://staging-api.example.com)
+bun run src/api/staging-api-server.js
+
+# Start terminal server (wss://terminal.example.com/terminal)
+bun run src/servers/terminal-server.js
+
+# Start HTTP dashboard server (https://dashboard.example.com)
+bun run src/servers/http-server.js
+```
+
+### Development vs Production URLs
+
+**Development (Local)**
+- Dashboard: `https://api.example.com` (https://dashboard.example.com)       
+- Terminal: `wss://127.0.0.1:3001/terminal` (wss://terminal.example.com/terminal)
+- Staging API: `https://api.example.com` (https://staging-api.example.com) 
+
+**Production (Deployed)**
+- Dashboard: `https://dashboard.example.com`
+- Terminal: `wss://terminal.example.com/terminal`
+- Staging API: `https://staging-api.example.com`
+
+See [`.vscode/launch.json`](./.vscode/launch.json) for debug configurations and [`LOCALHOST_MIGRATION_SUMMARY.md`](./LOCALHOST_MIGRATION_SUMMARY.md) for migration details.
+
+### API Examples
+
+See [`examples/api-usage-examples.js`](./examples/api-usage-examples.js) for comprehensive usage examples including:
+
+- HTTP client usage with advanced Bun features
+- WebSocket terminal connections
+- Server setup and management
+- React component integration
+- Performance testing and error handling
 
 ## Architecture
 

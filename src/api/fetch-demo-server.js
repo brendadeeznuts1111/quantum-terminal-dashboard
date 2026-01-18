@@ -260,22 +260,22 @@ const response = await fetch("http://example.com", {
             <h2>🧪 Testing with curl</h2>
             <div class="code">
 # Basic fetch
-curl -s "http://localhost:3000/basic-fetch"
+curl -s "http://api.example.com/basic-fetch"
 
 # POST request
 curl -X POST -H "Content-Type: application/json" \\
   -d '{"message": "Hello"}' \\
-  "http://localhost:3000/post-request"
+  "http://api.example.com/post-request"
 
 # Custom headers
 curl -H "X-Custom-Header: test-value" \\
-  "http://localhost:3000/custom-headers"
+  "http://api.example.com/custom-headers"
 
 # Streaming response
-curl -N "http://localhost:3000/streaming"
+curl -N "http://api.example.com/streaming"
 
 # With timeout (client-side)
-curl -m 5 "http://localhost:3000/timeout"
+curl -m 5 "http://api.example.com/timeout"
             </div>
         </div>
 
@@ -824,42 +824,42 @@ await fetch('/upload', { method: 'POST', body: stream });
 
       console.log("🌐 Fetch Demo Server started successfully!");
       console.log(`   Staging URL: https://staging-api.example.com/`);
-      console.log(`   Development URL: http://localhost:3000/`);
+      console.log(`   Development URL: http://api.example.com/`);
       console.log(`   Environment: ${this.configManager.getEnvironment()}`);
       console.log(`   Fetch Demo: Enabled`);
 
       console.log("\n🌐 Available Fetch Demo Endpoints:");
-      console.log("   🏠 http://localhost:3000/ - Fetch demo home");
-      console.log("   📡 http://localhost:3000/basic-fetch - Basic fetch");
-      console.log("   📤 http://localhost:3000/post-request - POST requests");
+      console.log("   🏠 http://api.example.com/ - Fetch demo home");
+      console.log("   📡 http://api.example.com/basic-fetch - Basic fetch");
+      console.log("   📤 http://api.example.com/post-request - POST requests");
       console.log(
-        "   📋 http://localhost:3000/custom-headers - Custom headers",
+        "   📋 http://api.example.com/custom-headers - Custom headers",
       );
       console.log(
-        "   📄 http://localhost:3000/response-bodies - Response bodies",
+        "   📄 http://api.example.com/response-bodies - Response bodies",
       );
-      console.log("   🌊 http://localhost:3000/streaming - Streaming");
-      console.log("   ⏱️ http://localhost:3000/timeout - Timeout demo");
-      console.log("   🔀 http://localhost:3000/proxy - Proxy demo");
-      console.log("   🚫 http://localhost:3000/abort - Abort demo");
-      console.log("   📤 http://localhost:3000/upload - Upload demo");
+      console.log("   🌊 http://api.example.com/streaming - Streaming");
+      console.log("   ⏱️ http://api.example.com/timeout - Timeout demo");
+      console.log("   🔀 http://api.example.com/proxy - Proxy demo");
+      console.log("   🚫 http://api.example.com/abort - Abort demo");
+      console.log("   📤 http://api.example.com/upload - Upload demo");
       console.log(
-        "   ❤️ http://localhost:3000/api/v1/health - Health with fetch info",
+        "   ❤️ http://api.example.com/api/v1/health - Health with fetch info",
       );
 
       console.log("\n🧪 Testing with curl:");
       console.log(`# Basic fetch`);
-      console.log(`curl -s "http://localhost:3000/basic-fetch"`);
+      console.log(`curl -s "http://api.example.com/basic-fetch"`);
       console.log(`# POST request`);
       console.log(
-        `curl -X POST -H "Content-Type: application/json" -d '{"test": true}' "http://localhost:3000/post-request"`,
+        `curl -X POST -H "Content-Type: application/json" -d '{"test": true}' "http://api.example.com/post-request"`,
       );
       console.log(`# Custom headers`);
       console.log(
-        `curl -H "X-Custom-Header: demo" "http://localhost:3000/custom-headers"`,
+        `curl -H "X-Custom-Header: demo" "http://api.example.com/custom-headers"`,
       );
       console.log(`# Streaming response`);
-      console.log(`curl -N "http://localhost:3000/streaming"`);
+      console.log(`curl -N "http://api.example.com/streaming"`);
 
       return this.server;
     } catch (error) {

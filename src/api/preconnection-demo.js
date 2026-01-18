@@ -121,7 +121,7 @@ class PreconnectionDemo {
       // Simulate preconnection request
       console.log("🔍 Sending preconnection request...");
 
-      const response = await fetch("http://localhost:3000/", {
+      const response = await fetch("http://api.example.com/", {
         method: "HEAD", // HEAD request for preconnection
         headers: headers,
       });
@@ -165,7 +165,7 @@ class PreconnectionDemo {
       console.log(`\n🔍 Testing ${endpoint}:`);
 
       try {
-        const response = await fetch(`http://localhost:3000${endpoint}`, {
+        const response = await fetch(`http://api.example.com${endpoint}`, {
           headers: apiHeaders,
         });
 

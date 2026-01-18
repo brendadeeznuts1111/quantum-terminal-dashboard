@@ -1,0 +1,99 @@
+# CORS and CSP Configuration
+# This file defines the security headers for the Quantum Terminal Dashboard
+
+cors:
+  # Allowed origins for CORS requests
+  allowed_origins:
+    - https://quantum.example.com
+    - https://staging-quantum.example.com
+    - https://api.example.com
+  
+  # Allowed methods
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  
+  # Allowed headers
+  allowed_headers:
+    - Content-Type
+    - Authorization
+    - X-Requested-With
+    - X-Custom-Header
+  
+  # Credentials support
+  allow_credentials: true
+  
+  # Max age for preflight requests
+  max_age: 86400
+
+csp:
+  # Content Security Policy directives
+  default_src:
+    - "'self'"
+  
+  script_src:
+    - "'self'"
+    - "'unsafe-inline'"  # Required for some React development
+    - "https://cdn.example.com"
+  
+  style_src:
+    - "'self'"
+    - "'unsafe-inline'"
+  
+  img_src:
+    - "'self'"
+    - "data:"
+    - "https:"
+  
+  font_src:
+    - "'self'"
+    - "https://fonts.googleapis.com"
+  
+  connect_src:
+    - "'self'"
+    - "wss://terminal.example.com"
+    - "https://api.example.com"
+  
+  frame_ancestors:
+    - "'none'"
+  
+  base_uri:
+    - "'self'"
+  
+  form_action:
+    - "'self'"
+  
+  # Report violations to this endpoint
+  report_uri: /api/v1/csp-report
+  
+  # Enforce policy (true) or just report (false)
+  enforce: true
+
+# Security headers
+security_headers:
+  # HSTS (HTTP Strict Transport Security)
+  hsts:
+    enabled: true
+    max_age: 31536000
+    include_subdomains: true
+    preload: true
+  
+  # X-Frame-Options
+  x_frame_options: DENY
+  
+  # X-Content-Type-Options
+  x_content_type_options: nosniff
+  
+  # Referrer Policy
+  referrer_policy: strict-origin-when-cross-origin
+  
+  # Permissions Policy
+  permissions_policy:
+    geolocation: "()"
+    microphone: "()"
+    camera: "()"
+    fullscreen: "(self)"
+    payment: "()"

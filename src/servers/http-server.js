@@ -166,7 +166,7 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
         term.writeln('');
 
         // Connect WebSocket
-        const ws = new WebSocket('ws://localhost:3001/terminal');
+        const ws = new WebSocket('wss://api.example.com/terminal');
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -413,9 +413,9 @@ function startHttpServer(port = 3000) {
           version: "1.4.0-pty.alpha.1",
           features: ["TERMINAL", "WEBGL", "PREMIUM"],
           endpoints: {
-            dashboard: "http://localhost:3000",
-            terminal: "ws://localhost:3001/terminal",
-            health: "http://localhost:3000/health",
+            dashboard: "https://dashboard.example.com",
+            terminal: "wss://api.example.com/terminal",
+            health: "https://api.example.com/health",
           },
         });
       }
@@ -434,7 +434,7 @@ function startHttpServer(port = 3000) {
   });
 
   console.log(
-    `Quantum Dashboard HTTP Server running on http://localhost:${server.port}`,
+    `Quantum Dashboard HTTP Server running on https://dashboard.example.com:${server.port}`,
   );
   return server;
 }
@@ -452,7 +452,7 @@ async function startServers(httpPort = 3000, wsPort = 3001) {
   const httpServer = startHttpServer(httpPort);
 
   console.log("\nDashboard ready:");
-  console.log(`  Open http://localhost:${httpPort} in your browser`);
+  console.log(`  Open https://dashboard.example.com:${httpPort} in your browser`);
   console.log("\nPress Ctrl+C to stop\n");
 
   return { httpServer, wsServer };

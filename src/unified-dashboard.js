@@ -1832,7 +1832,7 @@ class UnifiedDashboard {
       },
     });
 
-    console.log(`  HTTP Server: http://localhost:${CONFIG.httpPort}`);
+    console.log(`  HTTP Server: https://api.example.com:${CONFIG.httpPort}`);
 
     // Start WebSocket server
     this.wsServer = Bun.serve({
@@ -1877,7 +1877,7 @@ class UnifiedDashboard {
     }, 10000);
 
     console.log("═".repeat(60));
-    console.log(`\nDashboard ready at http://localhost:${CONFIG.httpPort}`);
+    console.log(`\nDashboard ready at https://api.example.com:${CONFIG.httpPort}`);
     console.log("Press Ctrl+C to stop\n");
 
     return this;

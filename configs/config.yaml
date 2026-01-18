@@ -4,14 +4,14 @@
 defaults: &defaults
   # Server configuration
   server:
-    host: "localhost"
-    port: 3000
+    host: "api.example.com"
+    port: 443
     timeout: 5000
     retries: 3
-    
+
   # Database configuration
   database:
-    host: "localhost"
+    host: "db.example.com"
     port: 5432
     name: "quantum_lattice"
     pool_size: 10
@@ -61,10 +61,11 @@ development:
   <<: *defaults
   server:
     <<: *defaults.server
-    host: "localhost"
-    port: 3000
+    host: "127.0.0.1"
+    port: 
   database:
     <<: *defaults.database
+    host: "127.0.0.1"
     name: "quantum_lattice_dev"
   cache:
     <<: *defaults.cache
@@ -169,10 +170,11 @@ test:
   <<: *defaults
   server:
     <<: *defaults.server
-    host: "localhost"
+    host: "127.0.0.1"
     port: 3001
   database:
     <<: *defaults.database
+    host: "127.0.0.1"
     name: "quantum_lattice_test"
     pool_size: 5
   cache:

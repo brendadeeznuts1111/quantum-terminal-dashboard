@@ -10,7 +10,6 @@
  * - Deployment with canary releases
  */
 
-import { watch } from "fs";
 import { join, basename } from "path";
 
 class QuantumProductionSystem {
@@ -327,7 +326,7 @@ class QuantumProductionSystem {
           },
         });
 
-        console.log(`Dev server: http://localhost:${server.port}`);
+        console.log(`Dev server: https://127.0.0.1:${server.port}`);
         return server;
       },
     };
@@ -852,7 +851,7 @@ if (import.meta.main) {
           },
         });
         console.log(
-          `Terminal server: ws://localhost:${termServer.port}/terminal`,
+          `Terminal server: wss://127.0.0.1:${termServer.port}/terminal`,
         );
       }
 

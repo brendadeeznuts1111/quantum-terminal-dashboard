@@ -53,7 +53,7 @@ async function testExactChromeHeaders() {
 
   try {
     // Test with exact Chrome headers
-    const response = await fetch("http://localhost:3000/", {
+    const response = await fetch("http://api.example.com/", {
       headers: {
         "user-agent": chromeHeaders["user-agent"],
         "sec-ch-ua": chromeHeaders["sec-ch-ua"],
@@ -93,7 +93,7 @@ async function testChromeHeadersAnalysis() {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/v1/chrome-headers",
+      "http://api.example.com/api/v1/chrome-headers",
       {
         headers: {
           "user-agent":
@@ -145,7 +145,7 @@ async function testHealthWithChromeHeaders() {
   console.log("-".repeat(60));
 
   try {
-    const response = await fetch("http://localhost:3000/api/v1/health", {
+    const response = await fetch("http://api.example.com/api/v1/health", {
       headers: {
         "user-agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
@@ -230,7 +230,7 @@ user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 
 1. Open Chrome DevTools (F12)
 2. Go to Network tab
-3. Visit http://localhost:3000/
+3. Visit http://api.example.com/
 4. Click on the first request to staging-api.example.com
 5. Compare headers with expected values above
 6. Check response headers for staging-specific information
@@ -239,7 +239,7 @@ user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
   // Generate curl command with exact headers
   console.log("\n📋 Curl Command with Exact Chrome Headers:");
   console.log(`
-curl 'http://localhost:3000/' \\
+curl 'http://api.example.com/' \\
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \\
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \\
   -H 'sec-ch-ua-mobile: ?0' \\
@@ -330,7 +330,7 @@ async function runAllTests() {
 
     console.log("\n🌐 Server Information:");
     console.log("   🎯 Target URL: https://staging-api.example.com/");
-    console.log("   🔧 Development URL: http://localhost:3000/");
+    console.log("   🔧 Development URL: http://api.example.com/");
     console.log("   🌍 Browser: Chrome 143");
     console.log("   💻 Platform: macOS");
     console.log("   📊 Headers: 8 total");

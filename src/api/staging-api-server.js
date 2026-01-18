@@ -540,7 +540,7 @@ curl 'https://staging-api.example.com/' \\
     try {
       this.server = Bun.serve({
         port: 3000, // Development port (would be 443/80 in production)
-        hostname: "localhost",
+        hostname: "127.0.0.1",
         fetch: this.fetchHandler.bind(this),
         error(error) {
           console.error("Server error:", error);
@@ -550,7 +550,7 @@ curl 'https://staging-api.example.com/' \\
 
       console.log("🚀 Staging API Server started successfully!");
       console.log(`   Staging URL: https://staging-api.example.com/`);
-      console.log(`   Development URL: http://localhost:3000/`);
+      console.log(`   Development URL: https://api.example.com/`);
       console.log(`   Environment: ${this.configManager.getEnvironment()}`);
       console.log(
         `   API Version: ${this.configManager.getAPIConfig().version}`,
@@ -602,7 +602,7 @@ curl 'https://staging-api.example.com/' \\
     return {
       environment: this.configManager.getEnvironment(),
       staging_url: "https://staging-api.example.com",
-      development_url: "http://localhost:3000",
+      development_url: "https://api.example.com",
       server: this.configManager.getServerConfig(),
       api: this.configManager.getAPIConfig(),
       features: this.configManager.getFeaturesConfig(),

@@ -465,7 +465,7 @@ user-agent: ${userAgent}
 
       console.log("🔍 Chrome DevTools Headers Server started successfully!");
       console.log(`   Staging URL: https://staging-api.example.com/`);
-      console.log(`   Development URL: http://localhost:3000/`);
+      console.log(`   Development URL: http://api.example.com/`);
       console.log(`   Environment: ${this.configManager.getEnvironment()}`);
       console.log(`   Chrome DevTools: Enabled`);
 
@@ -485,7 +485,7 @@ user-agent: ${userAgent}
       console.log("\n🧪 Testing Instructions:");
       console.log("   1. Open Chrome DevTools (F12)");
       console.log("   2. Go to Network tab");
-      console.log("   3. Visit http://localhost:3000/");
+      console.log("   3. Visit http://api.example.com/");
       console.log("   4. Click on the first request");
       console.log("   5. Compare headers with expected values");
 

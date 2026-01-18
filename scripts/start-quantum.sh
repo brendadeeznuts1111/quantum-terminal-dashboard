@@ -85,7 +85,7 @@ install_deps() {
 
 start_dev() {
     print_info "Starting development server..."
-    print_info "HTTP server: http://localhost:$HTTP_PORT"
+    print_info "HTTP server: https://api.example.com:$HTTP_PORT"
     print_info "WebSocket: ws://localhost:$WS_PORT/terminal"
     echo ""
 
@@ -100,7 +100,7 @@ start_dev() {
 
 start_prod() {
     print_info "Starting production server..."
-    print_info "HTTP server: http://localhost:$HTTP_PORT"
+    print_info "HTTP server: https://api.example.com:$HTTP_PORT"
     print_info "WebSocket: ws://localhost:$WS_PORT/terminal"
     echo ""
 

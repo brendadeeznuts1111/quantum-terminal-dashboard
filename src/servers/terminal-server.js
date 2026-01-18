@@ -211,7 +211,7 @@ function startTerminalServer(port = 3001) {
       }
 
       return new Response(
-        "Quantum Terminal Server\n\nEndpoints:\n- ws://localhost:3001/terminal\n- GET /health\n- GET /api/sessions\n- GET /api/buffer/:sessionId",
+        "Quantum Terminal Server\n\nEndpoints:\n- wss://api.example.com/terminal\n- GET /health\n- GET /api/sessions\n- GET /api/buffer/:sessionId",
       );
     },
 
@@ -302,9 +302,9 @@ function startTerminalServer(port = 3001) {
   });
 
   console.log(`Quantum Terminal Server running on:`);
-  console.log(`  WebSocket: ws://localhost:${server.port}/terminal`);
-  console.log(`  Health:    http://localhost:${server.port}/health`);
-  console.log(`  Sessions:  http://localhost:${server.port}/api/sessions`);
+  console.log(`  WebSocket: wss://api.example.com/terminal`);
+  console.log(`  Health:    https://api.example.com/health`);
+  console.log(`  Sessions:  https://api.example.com/api/sessions`);
 
   return server;
 }

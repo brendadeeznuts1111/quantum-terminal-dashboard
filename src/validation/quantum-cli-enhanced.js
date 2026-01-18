@@ -17,8 +17,8 @@ class QuantumCLIEnhanced {
     this.terminalDemo = new QuantumTerminalDemo();
     this.bundleValidator = new BundleValidator();
     this.monitoring = new MonitoringIntegration({
-      endpoints: [{ url: "http://localhost:4003/metrics", method: "POST" }],
-      alerts: { endpoint: "http://localhost:4003/alerts" },
+      endpoints: [{ url: "https://api.example.com/metrics", method: "POST" }],
+      alerts: { endpoint: "https://api.example.com/alerts" },
     });
 
     this.commands = {

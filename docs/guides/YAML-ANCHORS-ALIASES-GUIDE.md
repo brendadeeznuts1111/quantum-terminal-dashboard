@@ -20,7 +20,7 @@ defaults: &defaults
 development:
   <<: *defaults
   api:
-    url: http://localhost:4000
+    url: https://api.example.com:4000
     key: dev_key_12345
   logging:
     level: debug
@@ -61,7 +61,7 @@ development:
     ttl: 3600          # Default value
     provider: redis
   api:
-    url: http://localhost:4000
+    url: https://api.example.com:4000
     key: dev_key_12345  # Override
 
 # Staging environment  
@@ -105,9 +105,9 @@ staging:
 ### **Development Environment Test**
 ```
 Environment: development
-Server: localhost:3000
+Server: api.example.com
 Database: quantum_lattice_dev
-API URL: http://localhost:4000
+API URL: https://api.example.com:4000
 Cache TTL: 3600s
 Log Level: debug
 SIMD Enabled: true

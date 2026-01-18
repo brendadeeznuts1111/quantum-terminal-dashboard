@@ -108,7 +108,7 @@ export const db = await createConnection(dbConfig.primary);
 ### **Application Configuration Test**
 ```
 Environment: Development
-Server: localhost:3000
+Server: api.example.com
 Database: quantum_lattice_dev
 Cache TTL: 300s
 Log Level: debug
@@ -176,14 +176,14 @@ if (isFeatureEnabled("newDashboard", user.email)) {
 connections:
   primary:
     type: postgres
-    host: ${DB_HOST:-localhost}
+    host: ${DB_HOST:-127.0.0.1}
     port: ${DB_PORT:-5432}
   cache:
     type: redis
-    host: ${REDIS_HOST:-localhost}
+    host: ${REDIS_HOST:-127.0.0.1}
   analytics:
     type: clickhouse
-    host: ${ANALYTICS_HOST:-localhost}
+    host: ${ANALYTICS_HOST:-127.0.0.1}
 ```
 
 ```typescript
@@ -202,7 +202,7 @@ export const analytics = await createConnection(dbConfig.analytics);
 # hot-reload-demo.yaml
 server:
   port: 3000
-  host: localhost
+  host: 127.0.0.1
 
 features:
   debug: true
@@ -258,9 +258,10 @@ bun build app.ts --outdir=dist
 ```yaml
 development:
   server:
-    host: localhost
+    host: 127.0.0.1
     port: 3000
   database:
+    host: 127.0.0.1
     name: quantum_lattice_dev
   features:
     quantumTerminal: true

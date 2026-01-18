@@ -3,7 +3,56 @@
 /**
  * terminal-demo.js - Interactive Terminal Demo System
  * Provides live demonstrations of quantum terminal capabilities
+ * Enhanced with optimizations 9-18
  */
+
+// Optimization 9: Pre-computed colour strings for progress bars
+const PROGRESS_COLOURS = Array.from({length: 101}, (_, i) => {
+  const hue = (i * 120) / 100; // 0 (red) to 120 (green)
+  const r = Math.floor(hue < 60 ? 255 : hue < 120 ? 255 - (hue - 60) * 4.25 : 0);
+  const g = Math.floor(hue < 60 ? hue * 4.25 : hue < 120 ? 255 : 255 - (hue - 120) * 4.25);
+  return `\x1b[48;2;${r};${g};0m`;
+});
+
+// Optimization 10: Branch-prediction hints
+const unlikely = typeof Bun !== 'undefined' && Bun.unlikely ? Bun.unlikely : (x) => x;
+const likely = typeof Bun !== 'undefined' && Bun.likely ? Bun.likely : (x) => x;
+
+// Optimization 14: TTY gradient progress bar utilities
+class TTYProgressBar {
+  constructor(width = 50) {
+    this.width = width;
+    this.isTTY = process.stdout.isTTY;
+  }
+  
+  // Single syscall progress bar with ANSI 24-bit colour
+  createGradient(progress) {
+    if (!this.isTTY) return '█'.repeat(Math.floor(progress * this.width));
+    
+    const clampedProgress = Math.min(1, Math.max(0, progress));
+    const filledWidth = Math.floor(clampedProgress * this.width);
+    const colourIndex = Math.min(100, Math.floor(clampedProgress * 100));
+    const bg = PROGRESS_COLOURS[colourIndex];
+    const reset = '\x1b[0m';
+    
+    return bg + ' '.repeat(filledWidth) + reset + ' '.repeat(this.width - filledWidth);
+  }
+  
+  // Tension-specific progress with blue->red gradient
+  createTensionBar(tension, maxTension = 1.0) {
+    if (!this.isTTY) return '█'.repeat(Math.floor((tension / maxTension) * this.width));
+    
+    const progress = Math.min(1, tension / maxTension);
+    const hue = (1 - progress) * 240; // 240 (blue) to 0 (red)
+    const r = Math.floor((1 - progress) * 255);
+    const b = Math.floor(progress * 255);
+    const bg = `\x1b[48;2;${r};0;${b}m`;
+    const reset = '\x1b[0m';
+    
+    const filledWidth = Math.floor(progress * this.width);
+    return bg + ' '.repeat(filledWidth) + reset + ' '.repeat(this.width - filledWidth);
+  }
+}
 
 export class QuantumTerminalDemo {
   constructor() {
@@ -12,6 +61,7 @@ export class QuantumTerminalDemo {
     this.activeDemos = new Set();
     this._tempFileHandle = null; // Re-use single Bun.file() handle
     this._resizeTimeout = null; // Debounce resize events
+    this.progressBar = new TTYProgressBar(); // Optimization 14
 
     // Freeze enum-like objects for JSC optimization
     this.DEMO_TYPES = Object.freeze({
@@ -23,8 +73,37 @@ export class QuantumTerminalDemo {
     this.TERMINAL_SIZE = Object.freeze({
       DEFAULT_COLS: 100,
       DEFAULT_ROWS: 30,
-      DEBOUNCE_MS: 16,
+      DEBOUNCE_MS: 16, // Optimization 14: 16ms debounce for 60fps
     });
+    
+    // Optimization 15: Live tunables support
+    this.config = {
+      updateInterval: 100,
+      maxTensions: 1000,
+      enableGradient: true,
+      debounceMs: 16,
+    };
+    
+    // Optimization 15: SIGUSR2 listener
+    if (typeof process !== 'undefined' && process.on) {
+      process.on('SIGUSR2', () => {
+        this.reloadConfig();
+      });
+    }
+  }
+  
+  // Optimization 15: Reload configuration
+  async reloadConfig() {
+    try {
+      const fs = await import('fs');
+      if (fs.existsSync('/tmp/quantum-tune.json')) {
+        const config = JSON.parse(fs.readFileSync('/tmp/quantum-tune.json', 'utf8'));
+        this.config = { ...this.config, ...config };
+        console.log('🔄 Terminal demo config updated');
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to reload demo config:', error.message);
+    }
   }
 
   loadDemoScripts() {

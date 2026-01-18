@@ -24,7 +24,7 @@ class StagingAPIServerDev {
     const quantumConfig = this.configManager.getQuantumConfig();
 
     console.log("🔧 Setting up staging API routes (development mode)...");
-    console.log(`   Base URL: http://localhost:3000`);
+    console.log(`   Base URL: http://api.example.com`);
     console.log(`   Version: ${apiConfig.version}`);
     console.log(`   Endpoints: ${apiConfig.endpoints?.length || 0} configured`);
 
@@ -132,7 +132,7 @@ class StagingAPIServerDev {
     <div class="header">
         <h1>🚀 Staging API Server</h1>
         <p>Quantum Cash Flow Lattice - Staging Environment (Development Mode)</p>
-        <p><strong>Base URL:</strong> <span class="url">http://localhost:3000</span></p>
+        <p><strong>Base URL:</strong> <span class="url">http://api.example.com</span></p>
         <p><strong>Version:</strong> ${apiConfig.version}</p>
         <p><strong>Status:</strong> <span style="color: green;">● Running</span></p>
     </div>
@@ -143,7 +143,7 @@ class StagingAPIServerDev {
         (endpoint) => `
         <div class="endpoint">
             <span class="method get">GET</span>
-            <span class="url">http://localhost:3000${endpoint}</span>
+            <span class="url">http://api.example.com${endpoint}</span>
         </div>
     `,
       )
@@ -160,7 +160,7 @@ class StagingAPIServerDev {
     <div style="margin-top: 30px; padding: 20px; background: #fef3c7; border-radius: 8px;">
         <h3>🧪 Testing with curl</h3>
         <pre style="background: #1f2937; color: #f3f4f6; padding: 15px; border-radius: 6px; overflow-x: auto;">
-curl 'http://localhost:3000/' \\
+curl 'http://api.example.com/' \\
   -H 'Upgrade-Insecure-Requests: 1' \\
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' \\
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143"' \\
@@ -445,7 +445,7 @@ curl 'http://localhost:3000/' \\
       });
 
       console.log("🚀 Staging API Server started successfully!");
-      console.log(`   Server: localhost:3000`);
+      console.log(`   Server: api.example.com`);
       console.log(`   Environment: ${this.configManager.getEnvironment()}`);
       console.log(
         `   API Version: ${this.configManager.getAPIConfig().version}`,
@@ -457,11 +457,11 @@ curl 'http://localhost:3000/' \\
       console.log("\n📡 Available endpoints:");
       const endpoints = this.configManager.getAPIConfig().endpoints || [];
       endpoints.forEach((endpoint) => {
-        console.log(`   📡 http://localhost:3000${endpoint}`);
+        console.log(`   📡 http://api.example.com${endpoint}`);
       });
 
       console.log("\n🧪 Test with curl:");
-      console.log(`curl 'http://localhost:3000/' \\`);
+      console.log(`curl 'http://api.example.com/' \\`);
       console.log(
         `  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' \\`,
       );

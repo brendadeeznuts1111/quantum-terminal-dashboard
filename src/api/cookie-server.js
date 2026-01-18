@@ -233,16 +233,16 @@ req.cookies.delete("user_id", { path: "/" });
             <h3>🧪 Testing with curl</h3>
             <div style="background: #1f2937; color: #f3f4f6; padding: 20px; border-radius: 8px; font-family: monospace;">
 # Test login (sets cookies)
-curl -c cookies.txt -b cookies.txt 'http://localhost:3000/login'
+curl -c cookies.txt -b cookies.txt 'http://api.example.com/login'
 
 # Test profile (reads cookies)
-curl -c cookies.txt -b cookies.txt 'http://localhost:3000/profile'
+curl -c cookies.txt -b cookies.txt 'http://api.example.com/profile'
 
 # Test theme toggle
-curl -c cookies.txt -b cookies.txt 'http://localhost:3000/theme'
+curl -c cookies.txt -b cookies.txt 'http://api.example.com/theme'
 
 # Test logout (deletes cookies)
-curl -c cookies.txt -b cookies.txt 'http://localhost:3000/logout'
+curl -c cookies.txt -b cookies.txt 'http://api.example.com/logout'
             </div>
         </div>
     </div>
@@ -603,37 +603,37 @@ curl -c cookies.txt -b cookies.txt 'http://localhost:3000/logout'
 
       console.log("🍪 Cookie Server started successfully!");
       console.log(`   Staging URL: https://staging-api.example.com/`);
-      console.log(`   Development URL: http://localhost:3000/`);
+      console.log(`   Development URL: http://api.example.com/`);
       console.log(`   Environment: ${this.configManager.getEnvironment()}`);
       console.log(`   Cookie Demo: Enabled`);
 
       console.log("\n🍪 Available Cookie Endpoints:");
-      console.log("   🏠 http://localhost:3000/ - Cookie demo home");
-      console.log("   🔑 http://localhost:3000/login - Set cookies");
-      console.log("   👤 http://localhost:3000/profile - Read cookies");
-      console.log("   🎨 http://localhost:3000/theme - Toggle theme");
-      console.log("   📊 http://localhost:3000/cookies - View all cookies");
-      console.log("   🚪 http://localhost:3000/logout - Delete cookies");
+      console.log("   🏠 http://api.example.com/ - Cookie demo home");
+      console.log("   🔑 http://api.example.com/login - Set cookies");
+      console.log("   👤 http://api.example.com/profile - Read cookies");
+      console.log("   🎨 http://api.example.com/theme - Toggle theme");
+      console.log("   📊 http://api.example.com/cookies - View all cookies");
+      console.log("   🚪 http://api.example.com/logout - Delete cookies");
       console.log(
-        "   ❤️ http://localhost:3000/api/v1/health - Health with cookie info",
+        "   ❤️ http://api.example.com/api/v1/health - Health with cookie info",
       );
 
       console.log("\n🧪 Testing with curl:");
       console.log(`# Login (sets cookies)`);
       console.log(
-        `curl -c cookies.txt -b cookies.txt 'http://localhost:3000/login'`,
+        `curl -c cookies.txt -b cookies.txt 'http://api.example.com/login'`,
       );
       console.log(`# Profile (reads cookies)`);
       console.log(
-        `curl -c cookies.txt -b cookies.txt 'http://localhost:3000/profile'`,
+        `curl -c cookies.txt -b cookies.txt 'http://api.example.com/profile'`,
       );
       console.log(`# Theme toggle`);
       console.log(
-        `curl -c cookies.txt -b cookies.txt 'http://localhost:3000/theme'`,
+        `curl -c cookies.txt -b cookies.txt 'http://api.example.com/theme'`,
       );
       console.log(`# Logout (deletes cookies)`);
       console.log(
-        `curl -c cookies.txt -b cookies.txt 'http://localhost:3000/logout'`,
+        `curl -c cookies.txt -b cookies.txt 'http://api.example.com/logout'`,
       );
 
       return this.server;

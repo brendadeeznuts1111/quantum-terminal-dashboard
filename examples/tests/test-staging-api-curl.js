@@ -27,7 +27,7 @@ async function testCurlCommand() {
   console.log("📄 1. Testing Original curl Command");
   console.log("-".repeat(50));
 
-  const curlCommand = `curl 'http://localhost:3000/' \\
+  const curlCommand = `curl 'https://staging-api.example.com/' \\
   -H 'Upgrade-Insecure-Requests: 1' \\
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \\
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \\
@@ -40,7 +40,7 @@ async function testCurlCommand() {
   try {
     // Execute curl command using Bun's shell
     const result =
-      await Bun.$`curl -s http://localhost:3000/ -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' -H 'sec-ch-ua: "Google Chrome";v="143"' -H 'sec-ch-ua-platform: "macOS"'`.text();
+      await Bun.$`curl -s https://staging-api.example.com/ -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' -H 'sec-ch-ua: "Google Chrome";v="143"' -H 'sec-ch-ua-platform: "macOS"'`.text();
 
     console.log("✅ Curl command executed successfully!");
     console.log("📄 Response (first 500 characters):");
@@ -73,7 +73,7 @@ async function testAPIEndpoints() {
     console.log(`\n🔍 Testing ${endpoint.name}:`);
 
     try {
-      const response = await fetch(`http://localhost:3000${endpoint.path}`, {
+      const response = await fetch(`https://staging-api.example.com${endpoint.path}`, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
@@ -116,16 +116,16 @@ async function demonstrateCurlVariations() {
   const variations = [
     {
       name: "Simple curl request",
-      command: "curl -s http://localhost:3000/api/v1/health",
+      command: "curl -s https://staging-api.example.com/api/v1/health",
     },
     {
       name: "With JSON pretty-printing",
-      command: "curl -s http://localhost:3000/api/v1/health | jq .",
+      command: "curl -s https://staging-api.example.com/api/v1/health | jq .",
     },
     {
       name: "With custom User-Agent",
       command:
-        'curl -s -H "User-Agent: QuantumStaging/1.0" http://localhost:3000/api/v1/metrics',
+        'curl -s -H "User-Agent: QuantumStaging/1.0" https://staging-api.example.com/api/v1/metrics',
     },
   ];
 
@@ -139,7 +139,7 @@ async function demonstrateCurlVariations() {
   try {
     console.log("\n🔍 Executing simple curl request:");
     const result =
-      await Bun.$`curl -s http://localhost:3000/api/v1/health`.text();
+      await Bun.$`curl -s https://staging-api.example.com/api/v1/health`.text();
     const data = JSON.parse(result);
     console.log(`   ✅ Status: ${data.status}`);
     console.log(`   🌍 Environment: ${data.environment}`);
@@ -173,9 +173,9 @@ async function runAllTests() {
 
     // Keep server running for manual testing
     console.log("\n🌐 Server is still running for manual testing:");
-    console.log("   http://localhost:3000/");
-    console.log("   http://localhost:3000/api/v1/health");
-    console.log("   http://localhost:3000/api/v1/metrics");
+    console.log("   https://staging-api.example.com/");
+    console.log("   https://staging-api.example.com/api/v1/health");
+    console.log("   https://staging-api.example.com/api/v1/metrics");
   } catch (error) {
     console.error("\n❌ Test suite failed:", error.message);
     console.error(error.stack);

@@ -21,7 +21,7 @@
 import { dns } from "bun";
 
 class BunFetchClient {
-  constructor(baseURL = "http://localhost:3000") {
+  constructor(baseURL = "https://api.example.com") {
     this.baseURL = baseURL;
     this.defaultHeaders = {
       "User-Agent":
@@ -289,7 +289,7 @@ class BunFetchClient {
   async fetchUnixSocket(socketPath, path, options = {}) {
     console.log(`🔌 Fetching via Unix socket: ${socketPath}`);
 
-    const response = await fetch(`http://localhost${path}`, {
+    const response = await fetch(`https://127.0.0.1${path}`, {
       ...options,
       headers: { ...this.defaultHeaders, ...options.headers },
       unix: socketPath,
@@ -620,7 +620,7 @@ class BunFetchClient {
 }
 
 // Create default client instance
-const bunFetchClient = new BunFetchClient("http://localhost:3000");
+const bunFetchClient = new BunFetchClient("https://api.example.com");
 
 // Export
 export default bunFetchClient;

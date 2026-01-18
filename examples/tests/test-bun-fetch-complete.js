@@ -7,7 +7,7 @@ import { dns } from "bun";
 console.log("🌐 Complete Bun Fetch API Test Suite\n");
 console.log("━".repeat(60));
 
-const client = new BunFetchClient("http://localhost:3000");
+const client = new BunFetchClient("http://api.example.com");
 
 // Test 1: DNS Prefetching
 async function testDNSPrefetch() {
@@ -30,7 +30,7 @@ async function testPreconnect() {
   console.log("-".repeat(50));
 
   // Preconnect to staging API
-  await client.preconnect("http://localhost:3000");
+  await client.preconnect("http://api.example.com");
 
   console.log("   ✅ Preconnect test completed");
 }
@@ -161,7 +161,7 @@ async function testTimeout() {
   // Test with sufficient timeout
   console.log("   🔍 Testing with 5000ms timeout:");
   const result1 = await client.fetchWithTimeout(
-    "http://localhost:3000/api/v1/health",
+    "http://api.example.com/api/v1/health",
     5000,
   );
   console.log(
@@ -171,7 +171,7 @@ async function testTimeout() {
   // Test with very short timeout (should timeout)
   console.log("   🔍 Testing with 1ms timeout (should fail):");
   const result2 = await client.fetchWithTimeout(
-    "http://localhost:3000/api/v1/health",
+    "http://api.example.com/api/v1/health",
     1,
   );
   console.log(
@@ -185,7 +185,7 @@ async function testAbortController() {
   console.log("-".repeat(50));
 
   const { promise, abort, controller } = client.createAbortableFetch(
-    "http://localhost:3000/api/v1/health",
+    "http://api.example.com/api/v1/health",
   );
 
   // Abort after 10ms
@@ -214,7 +214,7 @@ async function testStreamingResponse() {
 
   try {
     for await (const chunk of client.streamResponse(
-      "http://localhost:3000/api/v1/health",
+      "http://api.example.com/api/v1/health",
     )) {
       chunkCount++;
       totalBytes += chunk.length;
@@ -229,7 +229,7 @@ async function testStreamingResponse() {
   console.log("   🔍 Testing ReadableStream reader:");
   try {
     const result = await client.streamWithReader(
-      "http://localhost:3000/api/v1/health",
+      "http://api.example.com/api/v1/health",
     );
     console.log(`      ✅ Received ${result.totalChunks} chunks via reader`);
   } catch (e) {
@@ -246,7 +246,7 @@ async function testStreamingRequest() {
 
   try {
     const response = await client.postStream(
-      "http://localhost:3000/api/v1/health",
+      "http://api.example.com/api/v1/health",
       chunks,
     );
     console.log(`   ✅ Stream POST status: ${response.status}`);
@@ -313,7 +313,7 @@ async function testVerboseDebugging() {
   console.log("   🔍 Testing verbose: true");
   try {
     const response = await client.fetchVerbose(
-      "http://localhost:3000/api/v1/health",
+      "http://api.example.com/api/v1/health",
     );
     console.log(`   ✅ Verbose fetch completed: ${response.status}`);
   } catch (e) {
@@ -328,14 +328,14 @@ async function testRequestOptions() {
 
   // Test decompress option
   console.log("   🔍 Testing decompress: true");
-  const result1 = await client.request("http://localhost:3000/api/v1/health", {
+  const result1 = await client.request("http://api.example.com/api/v1/health", {
     decompress: true,
   });
   console.log(`      ✅ Decompress enabled: ${result1.ok}`);
 
   // Test keepalive option
   console.log("   🔍 Testing keepalive: false");
-  const result2 = await client.request("http://localhost:3000/api/v1/health", {
+  const result2 = await client.request("http://api.example.com/api/v1/health", {
     keepalive: false,
   });
   console.log(`      ✅ Keepalive disabled: ${result2.ok}`);
@@ -348,7 +348,7 @@ async function testDownloadToFile() {
 
   try {
     const result = await client.downloadToFile(
-      "http://localhost:3000/api/v1/health",
+      "http://api.example.com/api/v1/health",
       "/tmp/staging-health-response.json",
     );
     console.log(`   ✅ Downloaded to: ${result.path}`);
@@ -401,7 +401,7 @@ async function testPerformance() {
 
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    await fetch("http://localhost:3000/api/v1/health");
+    await fetch("http://api.example.com/api/v1/health");
     times.push(performance.now() - start);
   }
 
@@ -464,7 +464,7 @@ async function runAllTests() {
     console.log("   ✅ Download to file (Bun.write)");
     console.log("   ✅ Connection pooling");
 
-    console.log("\n🌐 Server: http://localhost:3000/");
+    console.log("\n🌐 Server: http://api.example.com/");
     console.log("📋 Staging URL: https://staging-api.example.com/");
   } catch (error) {
     console.error("\n❌ Test suite failed:", error.message);

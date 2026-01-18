@@ -2,12 +2,12 @@
 
 /**
  * Local Staging API Server
- * Runs on localhost:3000 to simulate https://staging-api.example.com/
+ * Runs on api.example.com to simulate https://staging-api.example.com/
  *
  * To map staging-api.example.com to localhost, add to /etc/hosts:
  *   127.0.0.1 staging-api.example.com
  *
- * Then access via: http://staging-api.example.com:3000/
+ * Then access via: https://staging-api.example.com:3000/
  */
 
 import { CompleteEnvironmentManager } from "../config/complete-environment-manager.js";
@@ -174,7 +174,7 @@ class StagingAPILocal {
 
         <div class="section">
             <h2>🧪 Test with curl</h2>
-            <div class="code">curl 'http://localhost:3000/' \\
+            <div class="code">curl 'https://staging-api.example.com:3000/' \\
   -H 'Upgrade-Insecure-Requests: 1' \\
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \\
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \\
@@ -186,7 +186,7 @@ class StagingAPILocal {
             <h2>🔧 Setup Instructions</h2>
             <p style="color: #94a3b8; margin-bottom: 15px;">To access via staging-api.example.com, add this to /etc/hosts:</p>
             <div class="code">sudo echo "127.0.0.1 staging-api.example.com" >> /etc/hosts</div>
-            <p style="color: #94a3b8; margin-top: 15px;">Then access: <code style="color: #10b981;">http://staging-api.example.com:3000/</code></p>
+            <p style="color: #94a3b8; margin-top: 15px;">Then access: <code style="color: #10b981;">https://staging-api.example.com:3000/</code></p>
         </div>
     </div>
 </body>
@@ -449,7 +449,7 @@ class StagingAPILocal {
 🚀 Staging API Server Started
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 Local URL:     http://localhost:3000/
+📍 Local URL:     https://api.example.com/
 📍 Staging URL:   https://staging-api.example.com/ (requires /etc/hosts entry)
 
 📡 Available Endpoints:
@@ -465,7 +465,7 @@ class StagingAPILocal {
    sudo sh -c 'echo "127.0.0.1 staging-api.example.com" >> /etc/hosts'
 
 🧪 Test with curl:
-   curl http://localhost:3000/api/v1/health
+   curl https://staging-api.example.com:3000/api/v1/health
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);

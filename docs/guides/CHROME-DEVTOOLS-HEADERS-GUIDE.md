@@ -129,7 +129,7 @@ const chromeHeaders = {
   'referrer-policy': 'strict-origin-when-cross-origin'
 };
 
-const response = await fetch('http://localhost:3000/', {
+const response = await fetch('http://api.example.com/', {
   headers: chromeHeaders
 });
 ```
@@ -141,7 +141,7 @@ const headersAnalysis = {
   timestamp: "2024-01-18T12:00:00.000Z",
   staging_url: "https://staging-api.example.com",
   chrome_devtools_headers: {
-    request_url: "http://localhost:3000/api/v1/chrome-headers",
+    request_url: "http://api.example.com/api/v1/chrome-headers",
     referrer_policy: "strict-origin-when-cross-origin",
     sec_ch_ua: '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
     sec_ch_ua_mobile: "?0",
@@ -258,7 +258,7 @@ const healthResponse = {
 
 ### **Curl with Exact Chrome Headers**
 ```bash
-curl 'http://localhost:3000/' \
+curl 'http://api.example.com/' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
   -H 'sec-ch-ua-mobile: ?0' \
@@ -269,7 +269,7 @@ curl 'http://localhost:3000/' \
 
 ### **Chrome Headers Analysis**
 ```bash
-curl 'http://localhost:3000/api/v1/chrome-headers' \
+curl 'http://api.example.com/api/v1/chrome-headers' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
   -H 'sec-ch-ua-mobile: ?0' \
@@ -279,7 +279,7 @@ curl 'http://localhost:3000/api/v1/chrome-headers' \
 
 ### **Health Check with Chrome Headers**
 ```bash
-curl 'http://localhost:3000/api/v1/health' \
+curl 'http://api.example.com/api/v1/health' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36' \
   -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
   -H 'sec-ch-ua-mobile: ?0' \
@@ -294,7 +294,7 @@ curl 'http://localhost:3000/api/v1/health' \
 ### **Step-by-Step Testing**
 1. **Open Chrome DevTools** (F12)
 2. **Go to Network tab**
-3. **Visit** `http://localhost:3000/`
+3. **Visit** `http://api.example.com/`
 4. **Click on the first request** to `staging-api.example.com`
 5. **Compare headers** with expected values:
    ```

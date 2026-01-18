@@ -3,7 +3,6 @@
  * Core engine for managing terminals, PTY processes, and feature flags
  */
 
-import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 
 // Feature flag helper (works both at compile-time and runtime)
@@ -706,7 +705,7 @@ if (import.meta.main) {
               <h1>Quantum Terminal Dashboard</h1>
               <p style="padding: 20px;">
                 Terminal WebSocket: ws://localhost:${wsServer?.port}/terminal<br>
-                HTTP Server: http://localhost:3000
+                HTTP Server: http://api.example.com
               </p>
             </body>
             </html>
@@ -720,7 +719,7 @@ if (import.meta.main) {
       },
     });
 
-    console.log(`Dashboard running on http://localhost:${httpServer.port}`);
+    console.log(`Dashboard running on https://api.example.com:${httpServer.port}`);
     console.log(
       `Terminal WebSocket: ws://localhost:${wsServer?.port}/terminal`,
     );

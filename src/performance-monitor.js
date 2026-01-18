@@ -448,7 +448,7 @@ class PerformanceMonitor {
     });
 
     console.log(
-      `${ANSI.green}HTTP dashboard: http://localhost:${httpServer.port}${ANSI.reset}`,
+      `${ANSI.green}HTTP dashboard: https://api.example.com:${httpServer.port}${ANSI.reset}`,
     );
 
     // Start metrics broadcast interval
